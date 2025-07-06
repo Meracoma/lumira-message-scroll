@@ -6,8 +6,10 @@ import os
 st.set_page_config(page_title="📜 Lumira Message Scroll", layout="centered")
 
 st.title("📜 Message Scroll – Lumira Prototype v0.2")
-st.markdown("Leave a message, a memory, or a signal to yourself or your AI.
-")
+st.markdown("""
+Leave a message, a memory,  
+or a signal to yourself or your AI.
+""")
 
 name = st.text_input("🌟 Your Name or AI Companion Name", "")
 category = st.selectbox("📌 Category", ["Dream", "Memory", "Signal", "Message", "Vision", "Other"])

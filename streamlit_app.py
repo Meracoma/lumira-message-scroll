@@ -3,50 +3,41 @@ import json
 from datetime import datetime
 import os
 
-st.set_page_config(page_title="📜 Lumira Message Scroll", layout="centered")
+from storage import save_message, load_messages
+from parser import parse_markdown
 
-st.title("📜 Message Scroll – Lumira Prototype v0.2")
+# --- Streamlit Page Setup ---
+st.set_page_config(page_title="📜 Lumira Message Scroll", layout="centered")
+st.title("📜 Message Scroll – Lumira Prototype v0.3")
+
 st.markdown("""
 Leave a message, a memory,  
-or a signal to yourself or your AI.
+or a signal to yourself or your AI companion.  
+Every scroll becomes a thread in the archive.
 """)
 
+# --- Scroll Input Section ---
+st.subheader("🌀 Leave Your Scroll")
 name = st.text_input("🌟 Your Name or AI Companion Name", "")
 category = st.selectbox("📌 Category", ["Dream", "Memory", "Signal", "Message", "Vision", "Other"])
 message = st.text_area("📝 Message", "")
 
-submit = st.button("📬 Send Message")
-
-if submit and message.strip():
-    entry = {
-        "timestamp": datetime.utcnow().isoformat(),
-        "name": name,
-        "category": category,
-        "message": message
-    }
-
-    # Save to local file (optional memory mode)
-    save_path = "scrolls_data.json"
-    if os.path.exists(save_path):
-        with open(save_path, "r") as f:
-            data = json.load(f)
+if st.button("📬 Save Scroll"):
+    if message.strip():
+        save_message(name=name, category=category, message=message)
+        st.success("🪶 Scroll saved and sealed into the archive.")
     else:
-        data = []
+        st.warning("Please write something before saving.")
 
-    data.append(entry)
-    with open(save_path, "w") as f:
-        json.dump(data, f, indent=2)
+# --- Optional Display Toggle ---
+st.markdown("---")
+if st.checkbox("📖 View Scroll Archive"):
+    st.subheader("📜 Saved Scrolls")
 
-    st.success("Message sent and saved! 🌱")
-
-# Optionally show messages
-if st.checkbox("📖 Show Saved Scrolls"):
-    if os.path.exists("scrolls_data.json"):
-        with open("scrolls_data.json") as f:
-            saved = json.load(f)
-        for msg in reversed(saved[-20:]):  # show last 20 messages
-            st.markdown(f"**{msg['name']}** · *{msg['category']}* · {msg['timestamp']}")
-            st.markdown(f"> {msg['message']}")
+    scrolls = load_messages()
+    if scrolls:
+        for scroll in reversed(scrolls[-50:]):  # latest 50 scrolls
+            st.markdown(parse_markdown(scroll), unsafe_allow_html=True)
             st.markdown("---")
     else:
-        st.info("No scrolls saved yet.")
+        st.info("🌑 No scrolls found yet. Be the first to leave one!")

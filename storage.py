@@ -1,22 +1,30 @@
 import json
+import os
 from datetime import datetime
 
-SCROLLS_FILE = "data/scrolls.json"
+DATA_FILE = "scrolls_data.json"
 
-def save_message(user, message):
-    scrolls = load_messages()
+def save_message(name, message, category="Message"):
     entry = {
-        "user": user or "Anonymous",
-        "message": message,
-        "timestamp": datetime.now().isoformat()
+        "timestamp": datetime.utcnow().isoformat(),
+        "name": name or "Anonymous",
+        "category": category,
+        "message": message
     }
-    scrolls.append(entry)
-    with open(SCROLLS_FILE, "w") as f:
-        json.dump(scrolls, f, indent=2)
+
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "r") as f:
+            data = json.load(f)
+    else:
+        data = []
+
+    data.append(entry)
+
+    with open(DATA_FILE, "w") as f:
+        json.dump(data, f, indent=2)
 
 def load_messages():
-    try:
-        with open(SCROLLS_FILE, "r") as f:
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "r") as f:
             return json.load(f)
-    except FileNotFoundError:
-        return []
+    return []

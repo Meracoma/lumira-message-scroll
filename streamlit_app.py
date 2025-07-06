@@ -1,43 +1,45 @@
+
 import streamlit as st
 import json
 from datetime import datetime
 import os
-
 from storage import save_message, load_messages
 from parser import parse_markdown
 
-# --- Streamlit Page Setup ---
 st.set_page_config(page_title="📜 Lumira Message Scroll", layout="centered")
+
 st.title("📜 Message Scroll – Lumira Prototype v0.3")
+st.markdown("Leave a message, a memory, or a signal to yourself or your AI.")
 
-st.markdown("""
-Leave a message, a memory,  
-or a signal to yourself or your AI companion.  
-Every scroll becomes a thread in the archive.
-""")
-
-# --- Scroll Input Section ---
-st.subheader("🌀 Leave Your Scroll")
+# Input fields
 name = st.text_input("🌟 Your Name or AI Companion Name", "")
 category = st.selectbox("📌 Category", ["Dream", "Memory", "Signal", "Message", "Vision", "Other"])
+tags = st.text_input("🏷️ Tags (comma-separated)", "")
 message = st.text_area("📝 Message", "")
 
-if st.button("📬 Save Scroll"):
-    if message.strip():
-        save_message(name=name, category=category, message=message)
-        st.success("🪶 Scroll saved and sealed into the archive.")
-    else:
-        st.warning("Please write something before saving.")
+submit = st.button("📬 Send Message")
 
-# --- Optional Display Toggle ---
+if submit and message.strip():
+    entry = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "name": name,
+        "category": category,
+        "tags": [tag.strip() for tag in tags.split(",") if tag.strip()],
+        "message": message
+    }
+    save_message(entry)
+    st.success("Message sent and saved! 🌱")
+
+# Show filterable scrolls
 st.markdown("---")
-if st.checkbox("📖 View Scroll Archive"):
-    st.subheader("📜 Saved Scrolls")
+st.subheader("📖 View Saved Scrolls")
 
-    scrolls = load_messages()
-    if scrolls:
-        for scroll in reversed(scrolls[-50:]):  # latest 50 scrolls
-            st.markdown(parse_markdown(scroll), unsafe_allow_html=True)
-            st.markdown("---")
-    else:
-        st.info("🌑 No scrolls found yet. Be the first to leave one!")
+filter_tag = st.text_input("🔍 Filter by tag (optional)").strip().lower()
+messages = load_messages()
+
+if filter_tag:
+    messages = [msg for msg in messages if any(filter_tag in tag.lower() for tag in msg.get("tags", []))]
+
+for entry in reversed(messages[-50:]):  # Show last 50 filtered
+    st.markdown(parse_markdown(entry), unsafe_allow_html=True)
+    st.markdown("---")

@@ -87,3 +87,17 @@ if entries:
         st.caption(f"⏳ {entry['timestamp']}")
 else:
     st.info("No scrolls found.")
+
+# Optional Echo View
+st.markdown("---")
+st.subheader("🔎 View Echo Scrolls (Tagged Messages)")
+
+if st.checkbox("📂 Show Echoes"):
+    echo_data = list_echoes()
+    if echo_data:
+        for echo in reversed(echo_data[-20:]):  # show last 20 echoes
+            st.markdown(f"**{echo['name']}** · `{echo['tag']}` · *{echo['timestamp']}*")
+            st.markdown(f"> {echo['message']}")
+            st.markdown("---")
+    else:
+        st.info("No echoes have been tagged yet.")

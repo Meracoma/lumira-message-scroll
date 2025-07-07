@@ -82,6 +82,12 @@ elif filter_option == "Keyword":
 elif filter_option == "Tag":
     entries = filter_by_tag(entries, filter_value)
 
+if selected_tag:
+    st.info(f"Filtered by tag: `{selected_tag}`")
+    if st.button("🔄 Clear Tag Filter"):
+        st.experimental_set_query_params()
+        st.experimental_rerun()
+
 # View Scrolls
 st.subheader("📖 View Message Scrolls")
 

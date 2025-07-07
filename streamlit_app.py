@@ -18,16 +18,25 @@ st.header("📜 Leave Your Scroll")
 name = st.text_input("🌟 Name or Signature")
 category = st.selectbox("📌 Category", ["Dream", "Memory", "Signal", "Reflection", "Whisper", "Other"])
 message = st.text_area("📝 Write your message, memory, or note to your future self...")
-
 tags_input = st.text_input("🏷️ Add Tags (comma-separated)", placeholder="e.g. Lucid, Awakening, Wolf Dream")
+uploaded_file = st.file_uploader("📷 Upload an image (optional)", type=["jpg", "jpeg", "png"])
 
 if st.button("💾 Save Scroll"):
     if message.strip():
+        image_path = None
+        if uploaded_file is not None:
+            uploads_dir = "uploads"
+            os.makedirs(uploads_dir, exist_ok=True)
+            image_path = os.path.join(uploads_dir, uploaded_file.name)
+            with open(image_path, "wb") as f:
+                f.write(uploaded_file.getbuffer())
+
         entry = {
             "name": name.strip() or "Anonymous",
             "category": category,
             "message": message.strip(),
             "tags": [tag.strip() for tag in tags_input.split(",") if tag.strip()],
+            "image_path": image_path,
             "timestamp": datetime.now().isoformat()
         }
         save_message(entry)

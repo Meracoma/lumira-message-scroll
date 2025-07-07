@@ -18,18 +18,20 @@ st.header("📜 Leave Your Scroll")
 name = st.text_input("🌟 Name or Signature")
 category = st.selectbox("📌 Category", ["Dream", "Memory", "Signal", "Reflection", "Whisper", "Other"])
 message = st.text_area("📝 Write your message, memory, or note to your future self...")
+image_file = st.file_uploader("🖼️ Upload an image (optional)", type=["png", "jpg", "jpeg", "gif"])
 tags_input = st.text_input("🏷️ Add Tags (comma-separated)", placeholder="e.g. Lucid, Awakening, Wolf Dream")
 uploaded_file = st.file_uploader("📷 Upload an image (optional)", type=["jpg", "jpeg", "png"])
 
 if st.button("💾 Save Scroll"):
+if st.button("💾 Save Scroll"):
     if message.strip():
         image_path = None
-        if uploaded_file is not None:
+        if image_file:  # <- Make sure this matches your uploader variable name
             uploads_dir = "uploads"
             os.makedirs(uploads_dir, exist_ok=True)
-            image_path = os.path.join(uploads_dir, uploaded_file.name)
+            image_path = os.path.join(uploads_dir, image_file.name)
             with open(image_path, "wb") as f:
-                f.write(uploaded_file.getbuffer())
+                f.write(image_file.getbuffer())
 
         entry = {
             "name": name.strip() or "Anonymous",
@@ -39,13 +41,12 @@ if st.button("💾 Save Scroll"):
             "image_path": image_path,
             "timestamp": datetime.now().isoformat()
         }
+
         save_message(entry)
         st.success("Scroll saved successfully!")
     else:
         st.warning("Please write a message before saving.")
-
-st.markdown("---")
-
+        
 # Echo Tagging Section
 st.markdown("### 🌀 Echo Tagging (Optional)")
 echo_tag = st.text_input("🔖 Tag this message with an echo (e.g. HUM_BODY, DREAM_SEED, etc.)")

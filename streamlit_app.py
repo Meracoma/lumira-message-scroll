@@ -131,9 +131,12 @@ if entries:
                     return "background-color:#f0f0f0; color:#333; padding:2px 8px; border-radius:6px;"
 
             styled_tags = " ".join(
-                [f"<span style='{get_tag_style(tag)}'>{tag}</span>" for tag in entry["tags"]]
-            )
-            st.markdown(f"🏷️ **Tags:** {styled_tags}", unsafe_allow_html=True)
+    [
+        f"<a href='?tag={tag}' style='{get_tag_style(tag)}'>{tag}</a>"
+        for tag in entry["tags"]
+    ]
+)
+st.markdown(f"🏷️ **Tags:** {styled_tags}", unsafe_allow_html=True)
 
         st.caption(f"⏳ {entry['timestamp']}")
         st.markdown("</div>", unsafe_allow_html=True)

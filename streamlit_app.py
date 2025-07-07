@@ -190,19 +190,20 @@ if entries:
                 for tag in entry["tags"]
             ])
             st.markdown(f"🏷️ **Tags:** {styled_tags}", unsafe_allow_html=True)
+st.caption(f"⏳ {entry['timestamp']}")
 
-        st.caption(f"⏳ {entry['timestamp']}")
-        with st.expander("📥 Download Scroll"):
+with st.spinner("🪄 Generating scroll image..."):
     scroll_image = generate_scroll_image(entry)
+
+with st.expander("📥 Download Scroll"):
     st.download_button(
         label="📜 Download as PNG",
         data=scroll_image,
         file_name=f"{entry['name'].replace(' ', '_')}_scroll.png",
         mime="image/png"
     )
-        st.markdown("</div>", unsafe_allow_html=True)
-else:
-    st.info("No scrolls found.")
+
+st.markdown("</div>", unsafe_allow_html=True)
 
 # --- Optional Echo View ---
 st.markdown("---")

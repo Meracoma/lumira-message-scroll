@@ -172,38 +172,31 @@ if entries:
 
         if entry.get("tags"):
             def get_tag_style(tag):
-                if "dream" in tag.lower():
-                    return "background-color:#d0c3ff; color:#301c57; padding:2px 8px; border-radius:6px;"
-                elif "hum" in tag.lower():
-                    return "background-color:#ffe4d1; color:#5a2e00; padding:2px 8px; border-radius:6px;"
-                elif "signal" in tag.lower():
-                    return "background-color:#d1f0ff; color:#003c5a; padding:2px 8px; border-radius:6px;"
-                elif "wolf" in tag.lower():
-                    return "background-color:#e0ffd9; color:#1e3a1e; padding:2px 8px; border-radius:6px;"
-                elif "featured" in tag.lower():
-                    return "background-color:#fff8b3; color:#7a6300; font-weight:bold; border-radius:8px; padding:3px 10px; box-shadow: 0 0 8px gold;"
-                else:
-                    return "background-color:#f0f0f0; color:#333; padding:2px 8px; border-radius:6px;"
-
+                # your style rules
+                ...
             styled_tags = " ".join([
                 f"<a href='?tag={tag}' style='{get_tag_style(tag)}'>{tag}</a>"
                 for tag in entry["tags"]
             ])
             st.markdown(f"🏷️ **Tags:** {styled_tags}", unsafe_allow_html=True)
-st.caption(f"⏳ {entry['timestamp']}")
 
-with st.spinner("🪄 Generating scroll image..."):
-    scroll_image = generate_scroll_image(entry)
+        st.caption(f"⏳ {entry['timestamp']}")
 
-with st.expander("📥 Download Scroll"):
-    st.download_button(
-        label="📜 Download as PNG",
-        data=scroll_image,
-        file_name=f"{entry['name'].replace(' ', '_')}_scroll.png",
-        mime="image/png"
-    )
+        with st.spinner("🪄 Generating scroll image..."):
+            scroll_image = generate_scroll_image(entry)
 
-st.markdown("</div>", unsafe_allow_html=True)
+        with st.expander("📥 Download Scroll"):
+            st.download_button(
+                label="📜 Download as PNG",
+                data=scroll_image,
+                file_name=f"{entry['name'].replace(' ', '_')}_scroll.png",
+                mime="image/png"
+            )
+
+        st.markdown("</div>", unsafe_allow_html=True)
+
+else:
+    st.info("No scrolls found.")
 
 # --- Optional Echo View ---
 st.markdown("---")

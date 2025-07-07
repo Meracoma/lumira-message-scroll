@@ -1,5 +1,6 @@
 # streamlit_app.py
 
+import streamlit.components.v1 as components
 from datetime import datetime
 import pytz
 import streamlit as st
@@ -13,6 +14,25 @@ from filters import filter_by_category, filter_by_name, filter_by_keyword, filte
 
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
+
+def scroll_card(entry):
+    glow_color = "#c084fc" if is_night() else "#facc15"  # Purple shimmer at night, golden glow during day
+    return f"""
+    <div style="
+        background: linear-gradient(135deg, #111 20%, #222 80%);
+        border: 2px solid {glow_color};
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 0 20px {glow_color}44;
+        animation: glowPulse 3s infinite alternate;
+        transition: transform 0.3s ease-in-out;
+    ">
+        <h3 style="color: #fff;">{entry['name']}</h3>
+        <p style="color: #ddd;">{entry['message']}</p>
+        <p style="font-size: 0.8rem; color: #aaa;">{entry['timestamp']}</p>
+    </div>
+    """
 
 def generate_scroll_image(entry):
     width, height = 800, 400
@@ -50,6 +70,16 @@ def generate_scroll_image(entry):
 
 # App Configuration
 st.set_page_config(page_title="📜 Lumira Message Scroll", layout="centered")
+
+# Inject animated CSS styles
+st.markdown("""
+    <style>
+    @keyframes glowPulse {
+        0% { box-shadow: 0 0 8px rgba(192, 132, 252, 0.3); }
+        100% { box-shadow: 0 0 20px rgba(192, 132, 252, 0.7); }
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 # --- MoonFire Mode Toggle Based on Time ---
 def is_night():
@@ -211,6 +241,15 @@ category_colors = {
 
 if entries:
     for entry in reversed(entries):
+        html = scroll_card(entry)
+        components.html(html, height=220)
+
+        # Optional: original info still visible
+        st.caption(f"⏳ {entry['timestamp']}")
+        st.markdown(f"🏷️ Tags: {', '.join(entry['tags'])}")
+        st.markdown("---")
+else:
+    st.info("No scrolls found.")
         st.markdown("---")
         emoji = category_emojis.get(entry['category'], "🌀")
         color = category_colors.get(entry["category"], "#ffffff")

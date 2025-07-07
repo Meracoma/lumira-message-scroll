@@ -172,10 +172,54 @@ st.markdown("### 🌀 Echo Tagging (Optional)")
 echo_tag = st.text_input("🔖 Tag this message with an echo (e.g. HUM_BODY, DREAM_SEED)")
 st.caption("🧠 Tip: Echo tags help categorize special scrolls for deeper AI memory or symbolic retrieval.")
 
+# --- Save Scroll ---
+if st.button("💾 Save Scroll"):
+    if message.strip():
+        image_path = None
+        if image_file:
+            uploads_dir = "uploads"
+            os.makedirs(uploads_dir, exist_ok=True)
+            image_path = os.path.join(uploads_dir, image_file.name)
+            with open(image_path, "wb") as f:
+                f.write(image_file.getbuffer())
+
+        entry = {
+            "name": name.strip() or "Anonymous",
+            "category": category,
+            "message": message.strip(),
+            "tags": [tag.strip() for tag in tags_input.split(",") if tag.strip()],
+            "image_path": image_path,
+            "timestamp": datetime.now().isoformat()
+        }
+
+        # AUTO-ECHO TAGGING BLOCK
+        echo_keywords = {
+            "dream": "DREAM_SEED",
+            "hum": "HUM_BODY",
+            "signal": "SIGNAL_CORE",
+            "wolf": "WOLF_ECHO",
+            "reflection": "MIRROR_THREAD",
+            "whisper": "WHISPER_LOOP",
+            "memory": "MEMORY_FLAME"
+        }
+
+        if not echo_tag.strip():
+            for tag in entry["tags"]:
+                for keyword, auto_echo in echo_keywords.items():
+                    if keyword in tag.lower():
+                        tag_echo(entry["name"], entry["message"], auto_echo)
+                        st.info(f"🔖 Auto-tagged Echo: `{auto_echo}` from tag `{tag}`")
+                        break
+
+        save_message(entry)
+        st.success("Scroll saved successfully!")
+    else:
+        st.warning("Please write a message before saving.")
+
+# Manual echo tagging after scroll saved
 if echo_tag and message.strip():
     tag_echo(name, message.strip(), echo_tag.strip())
     st.success(f"Echo '{echo_tag}' saved successfully.")
-
 # --- Filters ---
 st.subheader("🔍 Filter Scrolls")
 filter_option = st.selectbox("Filter by", ["All", "Category", "Name", "Keyword", "Tag"])

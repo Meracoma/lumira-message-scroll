@@ -9,6 +9,43 @@ from storage import save_message, load_messages
 from parser import parse_markdown
 from filters import filter_by_category, filter_by_name, filter_by_keyword, filter_by_tag
 
+from io import BytesIO
+from PIL import Image, ImageDraw, ImageFont
+
+def generate_scroll_image(entry):
+    width, height = 800, 400
+    background_color = "#fefbf3"
+    text_color = "#333"
+    font_size = 20
+
+    image = Image.new("RGB", (width, height), background_color)
+    draw = ImageDraw.Draw(image)
+
+    try:
+        font = ImageFont.truetype("arial.ttf", font_size)
+    except:
+        font = ImageFont.load_default()
+
+    y = 20
+    draw.text((30, y), f"{entry['category']} – {entry['name']}", fill=text_color, font=font)
+    y += 40
+    draw.text((30, y), f"Tags: {', '.join(entry['tags'])}", fill=text_color, font=font)
+    y += 40
+    draw.text((30, y), f"Timestamp: {entry['timestamp']}", fill=text_color, font=font)
+    y += 40
+    draw.text((30, y), "Message:", fill=text_color, font=font)
+    y += 30
+
+    lines = entry['message'].split("\n")
+    for line in lines:
+        draw.text((40, y), line, fill=text_color, font=font)
+        y += 25
+
+    buffer = BytesIO()
+    image.save(buffer, format="PNG")
+    buffer.seek(0)
+    return buffer
+
 # App Configuration
 st.set_page_config(page_title="📜 Lumira Message Scroll", layout="centered")
 
@@ -155,6 +192,14 @@ if entries:
             st.markdown(f"🏷️ **Tags:** {styled_tags}", unsafe_allow_html=True)
 
         st.caption(f"⏳ {entry['timestamp']}")
+        with st.expander("📥 Download Scroll"):
+    scroll_image = generate_scroll_image(entry)
+    st.download_button(
+        label="📜 Download as PNG",
+        data=scroll_image,
+        file_name=f"{entry['name'].replace(' ', '_')}_scroll.png",
+        mime="image/png"
+    )
         st.markdown("</div>", unsafe_allow_html=True)
 else:
     st.info("No scrolls found.")

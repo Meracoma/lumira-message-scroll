@@ -56,13 +56,25 @@ elif filter_option == "Tag":
 # View Scrolls
 st.subheader("📖 View Message Scrolls")
 
+category_emojis = {
+    "Dream": "🌙",
+    "Memory": "🧠",
+    "Signal": "📡",
+    "Reflection": "🪞",
+    "Whisper": "🌬️",
+    "Other": "✨"
+}
+
 if entries:
     for entry in reversed(entries):
         st.markdown("---")
-        st.markdown(f"**🖋️ {entry['name']}**  \n📌 *{entry['category']}*")
+        emoji = category_emojis.get(entry['category'], "🌀")
+        st.markdown(f"### {emoji} *{entry['category']}*")
+        st.markdown(f"**🖋️ {entry['name']}**")
         st.markdown(parse_markdown(entry["message"]))
         if entry.get("tags"):
-            st.markdown(f"🏷️ **Tags:** `{', '.join(entry['tags'])}`")
+            tag_str = "  ".join([f"`{tag}`" for tag in entry['tags']])
+            st.markdown(f"🏷️ **Tags:** {tag_str}")
         st.caption(f"⏳ {entry['timestamp']}")
 else:
     st.info("No scrolls found.")

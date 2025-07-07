@@ -82,9 +82,14 @@ if entries:
         st.markdown(f"### {emoji} *{entry['category']}*")
         st.markdown(f"**🖋️ {entry['name']}**")
         st.markdown(parse_markdown(entry["message"]))
+        
+        if entry.get("image_path"):
+            st.image(entry["image_path"], use_column_width=True)
+        
         if entry.get("tags"):
             tag_str = "  ".join([f"`{tag}`" for tag in entry['tags']])
             st.markdown(f"🏷️ **Tags:** {tag_str}")
+        
         st.caption(f"⏳ {entry['timestamp']}")
 else:
     st.info("No scrolls found.")

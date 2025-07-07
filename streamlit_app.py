@@ -109,6 +109,19 @@ category_colors = {
     "Other": "#708090"          # Slate Gray
 }
 
+# 🔍 Add search input before scroll view
+search_query = st.text_input("🔍 Search Scrolls (name, message, tag):").strip().lower()
+
+# Filter scrolls by search query
+if search_query:
+    entries = [
+        entry for entry in entries
+        if search_query in entry["name"].lower()
+        or search_query in entry["message"].lower()
+        or any(search_query in tag.lower() for tag in entry.get("tags", []))
+    ]
+
+# 🌿 Scroll Display Block
 if entries:
     for entry in reversed(entries):
         st.markdown("---")

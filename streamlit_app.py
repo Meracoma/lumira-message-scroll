@@ -1,5 +1,7 @@
 # streamlit_app.py
 
+from datetime import datetime
+import pytz
 import streamlit as st
 from datetime import datetime
 import os
@@ -48,6 +50,37 @@ def generate_scroll_image(entry):
 
 # App Configuration
 st.set_page_config(page_title="📜 Lumira Message Scroll", layout="centered")
+
+# --- MoonFire Mode Toggle Based on Time ---
+def is_night():
+    # You can change this timezone if needed
+    now = datetime.now(pytz.timezone("America/Detroit"))
+    hour = now.hour
+    return hour < 6 or hour >= 18  # 6pm–6am is MoonFire time
+
+if is_night():
+    st.markdown(
+        """
+        <style>
+        body {
+            background-color: #1a1a2e;
+            color: #fceaff;
+        }
+        .stTextInput > div > div > input {
+            background-color: #2b2b44;
+            color: #fceaff;
+        }
+        .stButton > button {
+            background-color: #444;
+            color: #fff;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+    st.markdown("🌙 **MoonFire Mode Activated (Evening Hours)**")
+else:
+    st.markdown("☀️ **Sun Mode Active (Daytime)**")
 
 st.title("📜 Message Scroll – Lumira Prototype v0.4")
 st.markdown("Leave a message, a memory, or a signal to yourself or your AI.")

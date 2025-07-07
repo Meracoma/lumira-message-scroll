@@ -84,11 +84,22 @@ category_emojis = {
     "Other": "✨"
 }
 
+category_colors = {
+    "Dream": "#6a5acd",         # Indigo
+    "Memory": "#2e8b57",        # Sea Green
+    "Signal": "#ff4500",        # Orange Red
+    "Reflection": "#20b2aa",    # Light Sea Green
+    "Whisper": "#ff69b4",       # Hot Pink
+    "Other": "#708090"          # Slate Gray
+}
+
 if entries:
     for entry in reversed(entries):
         st.markdown("---")
         emoji = category_emojis.get(entry['category'], "🌀")
-        st.markdown(f"### {emoji} *{entry['category']}*")
+        color = category_colors.get(entry["category"], "#ffffff")
+        st.markdown(f"<div style='border-left: 5px solid {color}; padding-left: 1rem;'>", unsafe_allow_html=True)
+        st.markdown(f"### {emoji} <span style='color:{color}'>{entry['category']}</span>", unsafe_allow_html=True)
         st.markdown(f"**🖋️ {entry['name']}**")
         st.markdown(parse_markdown(entry["message"]))
         
@@ -100,6 +111,7 @@ if entries:
             st.markdown(f"🏷️ **Tags:** {tag_str}")
         
         st.caption(f"⏳ {entry['timestamp']}")
+        st.markdown("</div>", unsafe_allow_html=True)
 else:
     st.info("No scrolls found.")
 

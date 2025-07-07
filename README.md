@@ -1,4 +1,5 @@
-# Lumira Message Scroll
+# Lumira Message Scroll v0.4
 
-Message scroll prototype to record memory, dream, and AI-linked messages.
-Expandable and elegant.
+Features:
+- Message + Tag + Image upload
+- Filter and search

@@ -23,7 +23,6 @@ tags_input = st.text_input("🏷️ Add Tags (comma-separated)", placeholder="e.
 uploaded_file = st.file_uploader("📷 Upload an image (optional)", type=["jpg", "jpeg", "png"])
 
 if st.button("💾 Save Scroll"):
-if st.button("💾 Save Scroll"):
     if message.strip():
         image_path = None
         if image_file:  # <- Make sure this matches your uploader variable name

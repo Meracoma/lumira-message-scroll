@@ -38,10 +38,9 @@ if st.button("💾 Save Scroll"):
 st.markdown("---")
 
 # Echo Tagging Section
-st.text_input("🔖 Tag this message with an echo", help="e.g. HUM_BODY, DREAM_SEED, etc.")
-
 st.markdown("### 🌀 Echo Tagging (Optional)")
 echo_tag = st.text_input("🔖 Tag this message with an echo (e.g. HUM_BODY, DREAM_SEED, etc.)")
+st.caption("🧠 Tip: Echo tags help categorize special scrolls for deeper AI memory or symbolic retrieval.")
 
 if echo_tag and message.strip():
     tag_echo(name, message.strip(), echo_tag.strip())

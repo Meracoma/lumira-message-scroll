@@ -243,11 +243,7 @@ if entries:
     for entry in reversed(entries):
         html = scroll_card(entry)
         components.html(html, height=220)
-
-        # Optional: original info still visible
-        st.caption(f"⏳ {entry['timestamp']}")
-        st.markdown(f"🏷️ Tags: {', '.join(entry['tags'])}")
-        st.markdown("---")
+        
 else:
     st.info("No scrolls found.")
         st.markdown("---")
@@ -270,9 +266,10 @@ else:
                 f"<a href='?tag={tag}' style='{get_tag_style(tag)}'>{tag}</a>"
                 for tag in entry["tags"]
             ])
-            st.markdown(f"🏷️ **Tags:** {styled_tags}", unsafe_allow_html=True)
-
+            # Optional: original info still visible
         st.caption(f"⏳ {entry['timestamp']}")
+        st.markdown(f"🏷️ Tags: {', '.join(entry['tags'])}")
+        st.markdown("---")
 
         with st.spinner("🪄 Generating scroll image..."):
             scroll_image = generate_scroll_image(entry)

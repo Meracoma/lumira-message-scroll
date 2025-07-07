@@ -28,3 +28,5 @@ def filter_scrolls(scrolls, name=None, category=None, date=None):
         date_obj = datetime.datetime.strptime(date, "%Y-%m-%d").date()
         filtered = [s for s in filtered if datetime.datetime.fromisoformat(s.get("timestamp")).date() == date_obj]
     return filtered
+def filter_by_tag(entries, tag):
+    return [e for e in entries if tag.lower() in [t.lower() for t in e.get("tags", [])]]

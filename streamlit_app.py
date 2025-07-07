@@ -63,7 +63,7 @@ filter_value = st.text_input("Enter filter value (if applicable):")
 # Load + Filter
 entries = load_messages()
 
-query_params = st.experimental_get_query_params()
+query_params = st.query_params
 selected_tag = query_params.get("tag", [None])[0]
 
 if selected_tag:

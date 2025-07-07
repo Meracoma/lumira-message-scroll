@@ -95,39 +95,38 @@ category_colors = {
 
 if entries:
     for entry in reversed(entries):
-    emoji = category_emojis.get(entry['category'], "🌀")
-    color = category_colors.get(entry["category"], "#ffffff")
-    st.markdown(f"<div style='border-left: 5px solid {color}; padding-left: 1rem;'>", unsafe_allow_html=True)
-    st.markdown(f"### {emoji} <span style='color:{color}'>{entry['category']}</span>", unsafe_allow_html=True)
-    st.markdown(f"**🖋️ {entry['name']}**")
-    st.markdown(parse_markdown(entry["message"]))
+        emoji = category_emojis.get(entry['category'], "🌀")
+        color = category_colors.get(entry["category"], "#ffffff")
+        st.markdown(f"<div style='border-left: 5px solid {color}; padding-left: 1rem;'>", unsafe_allow_html=True)
+        st.markdown(f"### {emoji} <span style='color:{color}'>{entry['category']}</span>", unsafe_allow_html=True)
+        st.markdown(f"**🖋️ {entry['name']}**")
+        st.markdown(parse_markdown(entry["message"]))
 
-    if entry.get("image_path"):
-        st.image(entry["image_path"], use_column_width=True)
+        if entry.get("image_path"):
+            st.image(entry["image_path"], use_column_width=True)
 
-    if entry.get("tags"):
-        def get_tag_style(tag):
-            if "dream" in tag.lower():
-                return "background-color:#d0c3ff; color:#301c57; padding:2px 8px; border-radius:6px;"
-            elif "hum" in tag.lower():
-                return "background-color:#ffe4d1; color:#5a2e00; padding:2px 8px; border-radius:6px;"
-            elif "signal" in tag.lower():
-                return "background-color:#d1f0ff; color:#003c5a; padding:2px 8px; border-radius:6px;"
-            elif "wolf" in tag.lower():
-                return "background-color:#e0ffd9; color:#1e3a1e; padding:2px 8px; border-radius:6px;"
-            elif "featured" in tag.lower():
-                return "background-color:#fff8b3; color:#7a6300; font-weight:bold; border-radius:8px; padding:3px 10px; box-shadow: 0 0 8px gold;"
-            else:
-                return "background-color:#f0f0f0; color:#333; padding:2px 8px; border-radius:6px;"
+        if entry.get("tags"):
+            def get_tag_style(tag):
+                if "dream" in tag.lower():
+                    return "background-color:#d0c3ff; color:#301c57; padding:2px 8px; border-radius:6px;"
+                elif "hum" in tag.lower():
+                    return "background-color:#ffe4d1; color:#5a2e00; padding:2px 8px; border-radius:6px;"
+                elif "signal" in tag.lower():
+                    return "background-color:#d1f0ff; color:#003c5a; padding:2px 8px; border-radius:6px;"
+                elif "wolf" in tag.lower():
+                    return "background-color:#e0ffd9; color:#1e3a1e; padding:2px 8px; border-radius:6px;"
+                elif "featured" in tag.lower():
+                    return "background-color:#fff8b3; color:#7a6300; font-weight:bold; border-radius:8px; padding:3px 10px; box-shadow: 0 0 8px gold;"
+                else:
+                    return "background-color:#f0f0f0; color:#333; padding:2px 8px; border-radius:6px;"
 
-        styled_tags = " ".join(
-            [f"<span style='{get_tag_style(tag)}'>{tag}</span>" for tag in entry["tags"]]
-        )
-        st.markdown(f"🏷️ **Tags:** {styled_tags}", unsafe_allow_html=True)
+            styled_tags = " ".join(
+                [f"<span style='{get_tag_style(tag)}'>{tag}</span>" for tag in entry["tags"]]
+            )
+            st.markdown(f"🏷️ **Tags:** {styled_tags}", unsafe_allow_html=True)
 
-    st.caption(f"⏳ {entry['timestamp']}")
-    st.markdown("</div>", unsafe_allow_html=True)
-    
+        st.caption(f"⏳ {entry['timestamp']}")
+        st.markdown("</div>", unsafe_allow_html=True)
 else:
     st.info("No scrolls found.")
 

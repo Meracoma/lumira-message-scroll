@@ -41,8 +41,8 @@ st.markdown("---")
 st.markdown("### 🌀 Echo Tagging (Optional)")
 echo_tag = st.text_input("🔖 Tag this message with an echo (e.g. HUM_BODY, DREAM_SEED, etc.)")
 
-if echo_tag:
-    tag_echo(user_name, message, echo_tag)
+if echo_tag and message.strip():
+    tag_echo(name, message.strip(), echo_tag.strip())
     st.success(f"Echo '{echo_tag}' saved successfully.")
 
 # Filter Panel
@@ -101,3 +101,4 @@ if st.checkbox("📂 Show Echoes"):
             st.markdown("---")
     else:
         st.info("No echoes have been tagged yet.")
+        

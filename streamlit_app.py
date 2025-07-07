@@ -243,10 +243,10 @@ if entries:
     for entry in reversed(entries):
         html = scroll_card(entry)
         components.html(html, height=220)
-        
-else:
-    st.info("No scrolls found.")
+
+        # Glow div separator
         st.markdown("---")
+        
         emoji = category_emojis.get(entry['category'], "🌀")
         color = category_colors.get(entry["category"], "#ffffff")
 
@@ -260,16 +260,18 @@ else:
 
         if entry.get("tags"):
             def get_tag_style(tag):
-                # your style rules
-                ...
+                return (
+                    "background-color:#fef3c7; color:#92400e; padding:2px 6px; border-radius:5px; "
+                    "text-decoration:none; font-size:0.85rem; margin-right:5px;"
+                )
+
             styled_tags = " ".join([
                 f"<a href='?tag={tag}' style='{get_tag_style(tag)}'>{tag}</a>"
                 for tag in entry["tags"]
             ])
-            # Optional: original info still visible
+            st.markdown(f"🏷️ **Tags:** {styled_tags}", unsafe_allow_html=True)
+
         st.caption(f"⏳ {entry['timestamp']}")
-        st.markdown(f"🏷️ Tags: {', '.join(entry['tags'])}")
-        st.markdown("---")
 
         with st.spinner("🪄 Generating scroll image..."):
             scroll_image = generate_scroll_image(entry)
@@ -283,7 +285,6 @@ else:
             )
 
         st.markdown("</div>", unsafe_allow_html=True)
-
 else:
     st.info("No scrolls found.")
 

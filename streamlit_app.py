@@ -38,6 +38,8 @@ if st.button("💾 Save Scroll"):
 st.markdown("---")
 
 # Echo Tagging Section
+st.text_input("🔖 Tag this message with an echo", help="e.g. HUM_BODY, DREAM_SEED, etc.")
+
 st.markdown("### 🌀 Echo Tagging (Optional)")
 echo_tag = st.text_input("🔖 Tag this message with an echo (e.g. HUM_BODY, DREAM_SEED, etc.)")
 

@@ -79,6 +79,26 @@ if st.button("💾 Save Scroll"):
             "timestamp": datetime.now().isoformat()
         }
 
+        # AUTO-ECHO TAGGING BLOCK
+        echo_keywords = {
+            "dream": "DREAM_SEED",
+            "hum": "HUM_BODY",
+            "signal": "SIGNAL_CORE",
+            "wolf": "WOLF_ECHO",
+            "reflection": "MIRROR_THREAD",
+            "whisper": "WHISPER_LOOP",
+            "memory": "MEMORY_FLAME"
+        }
+
+        # Only auto-tag if no echo manually entered
+        if not echo_tag.strip():
+            for tag in entry["tags"]:
+                for keyword, auto_echo in echo_keywords.items():
+                    if keyword in tag.lower():
+                        tag_echo(entry["name"], entry["message"], auto_echo)
+                        st.info(f"🔖 Auto-tagged Echo: `{auto_echo}` from tag `{tag}`")
+                        break  # Stop at first match
+
         save_message(entry)
         st.success("Scroll saved successfully!")
     else:

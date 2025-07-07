@@ -123,7 +123,7 @@ message = st.text_area("📝 Write your message, memory, or note to your future 
 image_file = st.file_uploader("🖼️ Upload an image (optional)", type=["png", "jpg", "jpeg", "gif"])
 tags_input = st.text_input("🏷️ Add Tags (comma-separated)", placeholder="e.g. Lucid, Awakening, Wolf Dream")
 
-if st.button("💾 Save Scroll"):
+if st.button("💾 Save Scroll", key="save_scroll_button"):
     if message.strip():
         image_path = None
         if image_file:
@@ -173,7 +173,7 @@ echo_tag = st.text_input("🔖 Tag this message with an echo (e.g. HUM_BODY, DRE
 st.caption("🧠 Tip: Echo tags help categorize special scrolls for deeper AI memory or symbolic retrieval.")
 
 # --- Save Scroll ---
-if st.button("💾 Save Scroll"):
+if st.button("💾 Save Scroll", key="save_scroll_button"):
     if message.strip():
         image_path = None
         if image_file:
@@ -220,6 +220,7 @@ if st.button("💾 Save Scroll"):
 if echo_tag and message.strip():
     tag_echo(name, message.strip(), echo_tag.strip())
     st.success(f"Echo '{echo_tag}' saved successfully.")
+    
 # --- Filters ---
 st.subheader("🔍 Filter Scrolls")
 filter_option = st.selectbox("Filter by", ["All", "Category", "Name", "Keyword", "Tag"])

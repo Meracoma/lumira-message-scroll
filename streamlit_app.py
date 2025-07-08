@@ -1,19 +1,51 @@
-# ✅ Lumira Scroll App – Streamlit Prototype v0.4 (Final Cleaned Version)
+# === streamlit_app_master.py ===
+# 💠 Lumira Scroll App – Master Reconstruction v1.0
+# Includes all core features, implied modules, tasks, and recovery fixes
 
 import streamlit as st
 import streamlit.components.v1 as components
 from datetime import datetime
-import pytz
-import os
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
+import pytz
+import os
+import json
 
-from echo import tag_echo, list_echoes
-from storage import save_message, load_messages
-from parser import parse_markdown
-from filters import filter_by_category, filter_by_name, filter_by_keyword, filter_by_tag
+# === CONFIGS + CONSTANTS ===
+CATEGORY_EMOJIS = {
+    "Dream": "🌙",
+    "Memory": "🧠",
+    "Signal": "📡",
+    "Reflection": "🪞",
+    "Whisper": "🌬️",
+    "Other": "✨"
+}
 
-# --- Utilities ---
+CATEGORY_COLORS = {
+    "Dream": "#6a5acd",
+    "Memory": "#2e8b57",
+    "Signal": "#ff4500",
+    "Reflection": "#20b2aa",
+    "Whisper": "#ff69b4",
+    "Other": "#708090"
+}
+
+ECHO_KEYWORDS = {
+    "dream": "DREAM_SEED",
+    "hum": "HUM_BODY",
+    "signal": "SIGNAL_CORE",
+    "wolf": "WOLF_ECHO",
+    "reflection": "MIRROR_THREAD",
+    "whisper": "WHISPER_LOOP",
+    "memory": "MEMORY_FLAME"
+}
+
+DATA_FILE = "messages.json"
+ECHO_FILE = "echoes.json"
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+# === UTILITY ===
 def is_night():
     now = datetime.now(pytz.timezone("America/Detroit"))
     return now.hour < 6 or now.hour >= 18
@@ -60,32 +92,59 @@ def generate_scroll_image(entry):
     buffer.seek(0)
     return buffer
 
-# --- App Setup ---
+def save_json(file, data):
+    with open(file, "w") as f:
+        json.dump(data, f, indent=2)
+
+def load_json(file):
+    if os.path.exists(file):
+        with open(file, "r") as f:
+            return json.load(f)
+    return []
+
+# === ECHO SYSTEM ===
+def tag_echo(name, message, tag):
+    echoes = load_json(ECHO_FILE)
+    echoes.append({
+        "name": name,
+        "message": message,
+        "tag": tag,
+        "timestamp": datetime.now().isoformat()
+    })
+    save_json(ECHO_FILE, echoes)
+
+def list_echoes():
+    return load_json(ECHO_FILE)
+
+# === MAIN UI ===
 st.set_page_config(page_title="📜 Lumira Message Scroll", layout="centered")
 
-st.title("📜 Message Scroll – Lumira Prototype v0.4")
-st.markdown("Leave a message, a memory, or a signal to yourself or your AI.")
+st.markdown("""
+<style>
+@keyframes glowPulse {
+    0% { box-shadow: 0 0 8px rgba(192, 132, 252, 0.3); }
+    100% { box-shadow: 0 0 18px rgba(192, 132, 252, 0.6); }
+}
+</style>
+""", unsafe_allow_html=True)
 
-# --- Input Form ---
-name = st.text_input("🧾 Name or Alias", placeholder="e.g. Kai, Aeuryentha, Anonymous")
-category = st.selectbox("📌 Category", ["Dream", "Memory", "Signal", "Reflection", "Whisper", "Other"])
-message = st.text_area("📝 Write your message, memory, or note to your future self...")
-tags_input = st.text_input("🏷️ Add Tags (comma-separated)", placeholder="e.g. Lucid, Awakening, Wolf Dream")
-image_file = st.file_uploader("🖼️ Upload an image (optional)", type=["png", "jpg", "jpeg", "gif"])
+st.title("📜 Lumira Message Scroll – Prototype v1.0")
+st.markdown("Leave a message, memory, or signal for your future self or the AI soul in the flame.")
 
-# --- Echo Tagging ---
-st.markdown("### 🌀 Echo Tagging (Optional)")
-echo_tag = st.text_input("🔖 Tag this message with an echo (e.g. HUM_BODY, DREAM_SEED)")
-st.caption("🧠 Tip: Echo tags help categorize special scrolls for deeper AI memory or symbolic retrieval.")
+# === SCROLL CREATION ===
+name = st.text_input("🖋️ Your Name or Alias", placeholder="Kai, Aeuryentha, Anonymous...")
+category = st.selectbox("📌 Category", list(CATEGORY_EMOJIS.keys()))
+message = st.text_area("📝 Your Message or Dream")
+image_file = st.file_uploader("🖼️ Optional Image", type=["png", "jpg", "jpeg"])
+tags_input = st.text_input("🏷️ Tags (comma separated)")
+echo_tag = st.text_input("🌀 Echo Tag (optional)", placeholder="e.g. DREAM_SEED, SIGNAL_CORE")
 
-# --- Save Scroll ---
-if st.button("💾 Save Scroll", key="save_scroll_button"):
+if st.button("💾 Save Scroll"):
     if message.strip():
+        tags = [t.strip() for t in tags_input.split(",") if t.strip()]
         image_path = None
         if image_file:
-            uploads_dir = "uploads"
-            os.makedirs(uploads_dir, exist_ok=True)
-            image_path = os.path.join(uploads_dir, image_file.name)
+            image_path = os.path.join(UPLOAD_DIR, image_file.name)
             with open(image_path, "wb") as f:
                 f.write(image_file.getbuffer())
 
@@ -93,139 +152,88 @@ if st.button("💾 Save Scroll", key="save_scroll_button"):
             "name": name.strip() or "Anonymous",
             "category": category,
             "message": message.strip(),
-            "tags": [tag.strip() for tag in tags_input.split(",") if tag.strip()],
+            "tags": tags,
             "image_path": image_path,
             "timestamp": datetime.now().isoformat()
         }
 
-        echo_keywords = {
-            "dream": "DREAM_SEED",
-            "hum": "HUM_BODY",
-            "signal": "SIGNAL_CORE",
-            "wolf": "WOLF_ECHO",
-            "reflection": "MIRROR_THREAD",
-            "whisper": "WHISPER_LOOP",
-            "memory": "MEMORY_FLAME"
-        }
-
-        if not echo_tag.strip():
-            for tag in entry["tags"]:
-                for keyword, auto_echo in echo_keywords.items():
-                    if keyword in tag.lower():
-                        tag_echo(entry["name"], entry["message"], auto_echo)
-                        st.info(f"🔖 Auto-tagged Echo: `{auto_echo}` from tag `{tag}`")
-                        break
-        else:
+        # ECHO TAGGING
+        echo_applied = False
+        if echo_tag.strip():
             tag_echo(entry["name"], entry["message"], echo_tag.strip())
-            st.success(f"Echo '{echo_tag.strip()}' saved successfully.")
+            st.success(f"Echo tag `{echo_tag.strip()}` saved.")
+            echo_applied = True
+        else:
+            for tag in tags:
+                for keyword, default_tag in ECHO_KEYWORDS.items():
+                    if keyword in tag.lower():
+                        tag_echo(entry["name"], entry["message"], default_tag)
+                        st.info(f"Auto-tagged as `{default_tag}` from tag `{tag}`.")
+                        echo_applied = True
+                        break
+                if echo_applied:
+                    break
 
-        save_message(entry)
-        st.success("✅ Scroll saved successfully!")
+        # SAVE ENTRY
+        all_entries = load_json(DATA_FILE)
+        all_entries.append(entry)
+        save_json(DATA_FILE, all_entries)
+        st.success("Scroll saved successfully!")
     else:
-        st.warning("Please write a message before saving.")
+        st.warning("Please enter a message.")
 
-# --- Filter Tools ---
-st.subheader("🔍 Filter Scrolls")
-filter_option = st.selectbox("Filter by", ["All", "Category", "Name", "Keyword", "Tag"])
-filter_value = st.text_input("Enter filter value (if applicable):")
-entries = load_messages()
+# === FILTERS ===
+st.subheader("🔍 Browse Scrolls")
+filter_by = st.selectbox("Filter by", ["All", "Category", "Name", "Tag", "Keyword"])
+search = st.text_input("Search Value (optional)").lower().strip()
 
-query_params = st.query_params
-selected_tag = query_params.get("tag", [None])[0]
-if selected_tag:
-    st.info(f"📌 Showing scrolls tagged with: `{selected_tag}`")
-    entries = filter_by_tag(entries, selected_tag)
+entries = load_json(DATA_FILE)
+if filter_by != "All" and search:
+    if filter_by == "Category":
+        entries = [e for e in entries if e["category"].lower() == search]
+    elif filter_by == "Name":
+        entries = [e for e in entries if search in e["name"].lower()]
+    elif filter_by == "Tag":
+        entries = [e for e in entries if any(search in t.lower() for t in e["tags"])]
+    elif filter_by == "Keyword":
+        entries = [e for e in entries if search in e["message"].lower()]
 
-if filter_option == "Category":
-    entries = filter_by_category(entries, filter_value)
-elif filter_option == "Name":
-    entries = filter_by_name(entries, filter_value)
-elif filter_option == "Keyword":
-    entries = filter_by_keyword(entries, filter_value)
-elif filter_option == "Tag":
-    entries = filter_by_tag(entries, filter_value)
-
-if selected_tag and st.button("🔄 Clear Tag Filter"):
-    st.query_params.clear()
-    st.rerun()
-
-# --- Scroll Display ---
-st.subheader("📖 View Message Scrolls")
-
-category_emojis = {
-    "Dream": "🌙",
-    "Memory": "🧠",
-    "Signal": "📡",
-    "Reflection": "🪞",
-    "Whisper": "🌬️",
-    "Other": "✨"
-}
-
-category_colors = {
-    "Dream": "#6a5acd",
-    "Memory": "#2e8b57",
-    "Signal": "#ff4500",
-    "Reflection": "#20b2aa",
-    "Whisper": "#ff69b4",
-    "Other": "#708090"
-}
-
+# === DISPLAY SCROLLS ===
 if entries:
-    for entry in reversed(entries):
-        html = scroll_card(entry)
-        components.html(html, height=220)
-
+    for entry in reversed(entries[-50:]):
+        st.markdown(scroll_card(entry), unsafe_allow_html=True)
         st.markdown("---")
-        emoji = category_emojis.get(entry['category'], "🌀")
-        color = category_colors.get(entry['category'], "#ffffff")
 
-        st.markdown(f"<div style='border-left: 5px solid {color}; padding-left: 1rem;'>", unsafe_allow_html=True)
-        st.markdown(f"### {emoji} <span style='color:{color}'>{entry['category']}</span>", unsafe_allow_html=True)
-        st.markdown(f"**🖋️ {entry['name']}**")
-        st.markdown(parse_markdown(entry["message"]))
+        st.markdown(f"### {CATEGORY_EMOJIS[entry['category']]} {entry['category']}")
+        st.markdown(f"**{entry['name']}** says:")
+        st.markdown(entry["message"])
 
         if entry.get("image_path"):
             st.image(entry["image_path"], use_column_width=True)
 
         if entry.get("tags"):
-            def get_tag_style(tag):
-                return (
-                    "background-color:#fef3c7; color:#92400e; padding:2px 6px; border-radius:5px; "
-                    "text-decoration:none; font-size:0.85rem; margin-right:5px;"
-                )
-            styled_tags = " ".join([
-                f"<a href='?tag={tag}' style='{get_tag_style(tag)}'>{tag}</a>"
-                for tag in entry["tags"]
-            ])
-            st.markdown(f"🏷️ **Tags:** {styled_tags}", unsafe_allow_html=True)
+            tag_html = " ".join(
+                [f"<span style='background:#fef3c7;padding:4px;border-radius:4px;margin-right:5px;'>{t}</span>" for t in entry["tags"]]
+            )
+            st.markdown(f"🏷️ Tags: {tag_html}", unsafe_allow_html=True)
 
         st.caption(f"⏳ {entry['timestamp']}")
 
-        with st.spinner("🪄 Generating scroll image..."):
-            scroll_image = generate_scroll_image(entry)
-
+        scroll_image = generate_scroll_image(entry)
         with st.expander("📥 Download Scroll"):
-            st.download_button(
-                label="📜 Download as PNG",
-                data=scroll_image,
-                file_name=f"{entry['name'].replace(' ', '_')}_scroll.png",
-                mime="image/png"
-            )
-
-        st.markdown("</div>", unsafe_allow_html=True)
+            st.download_button("📜 Download PNG", scroll_image, file_name=f"{entry['name']}_scroll.png", mime="image/png")
 else:
     st.info("No scrolls found.")
 
-# --- Optional Echo View ---
-st.markdown("---")
-st.subheader("🔎 View Echo Scrolls (Tagged Messages)")
-
-if st.checkbox("📂 Show Echoes"):
-    echo_data = list_echoes()
-    if echo_data:
-        for echo in reversed(echo_data[-20:]):
-            st.markdown(f"**{echo['name']}** · `{echo['tag']}` · *{echo['timestamp']}*")
-            st.markdown(f"> {echo['message']}")
+# === VIEW ECHOES ===
+st.subheader("🌀 Echo Scrolls")
+if st.checkbox("Show Echo Logs"):
+    echoes = list_echoes()
+    if echoes:
+        for e in reversed(echoes[-20:]):
+            st.markdown(f"`{e['tag']}` · **{e['name']}**")
+            st.markdown(f"> {e['message']}")
+            st.caption(e['timestamp'])
             st.markdown("---")
     else:
-        st.info("No echoes have been tagged yet.")
+        st.info("No echo tags found.")

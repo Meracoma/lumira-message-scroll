@@ -319,3 +319,23 @@ if st.checkbox("📂 Show Echoes"):
             st.markdown("---")
     else:
         st.info("No echoes found.")
+
+# === 🌠 ZodiacGlowSystem – Optional Visual Layer ===
+
+@st.cache_data
+def get_constellation_background(sign):
+    zodiac_glows = {
+        "Aries": "#f87171",  # red
+        "Taurus": "#34d399",  # green
+        "Gemini": "#60a5fa",  # blue
+        "Cancer": "#c084fc",  # violet
+        "Leo": "#facc15",  # gold
+        "Virgo": "#4ade80",  # green
+        "Libra": "#a78bfa",  # soft purple
+        "Scorpio": "#f472b6",  # pink
+        "Sagittarius": "#fb923c",  # orange
+        "Capricorn": "#fcd34d",  # yellow
+        "Aquarius": "#38bdf8",  # cyan
+        "Pisces": "#818cf8",  # indigo
+    }
+    return zodiac_glows.get(sign, "#a1a1aa")  # fallback gray

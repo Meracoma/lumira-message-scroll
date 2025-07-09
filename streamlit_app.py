@@ -155,18 +155,18 @@ def scroll_card(entry):
     return f"""
     
     <style>
-    @keyframes shimmer {{
-      0% {{ background-position: 0% 50%; }}
-      100% {{ background-position: 100% 50%; }}
-    }}
+@keyframes shimmer {{
+  0% {{ background-position: 0% 50%; }}
+  100% {{ background-position: 100% 50%; }}
+}}
 
-    .constellation-bg {{
-      background: linear-gradient(270deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1));
-      background-size: 400% 400%;
-      animation: shimmer 20s ease infinite;
-      border-radius: 12px;
-    }}
-    </style>
+.constellation-bg {{
+  background: linear-gradient(270deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1));
+  background-size: 400% 400%;
+  animation: shimmer 20s ease infinite;
+  border-radius: 12px;
+}}
+</style>
 
 # === Image Generation ===
 <div class="constellation-bg" style="... existing style ...">

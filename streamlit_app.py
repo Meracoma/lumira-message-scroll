@@ -13,6 +13,13 @@ from storage import save_message, load_messages
 from parser import parse_markdown
 from filters import filter_by_category, filter_by_name, filter_by_keyword, filter_by_tag
 
+=== Constants Lookups ===
+ZODIAC_GLYPHS = {
+    "Aries": "♈", "Taurus": "♉", "Gemini": "♊", "Cancer": "♋",
+    "Leo": "♌", "Virgo": "♍", "Libra": "♎", "Scorpio": "♏",
+    "Sagittarius": "♐", "Capricorn": "♑", "Aquarius": "♒", "Pisces": "♓"
+}
+
 # === App Config ===
 st.set_page_config(page_title="📜 Lumira Message Scroll", layout="centered")
 
@@ -73,6 +80,8 @@ def is_night():
 # === 🌙 Cosmic Panel ===
 with st.expander("🌌 Moonfire & Cosmic Current", expanded=False):
     today = datetime.now()
+    glyph = ZODIAC_GLYPHS.get(zodiac, "")
+    st.markdown(f"### ☀️ Sun is in **{zodiac}** {glyph}")
     zodiac = get_zodiac_sign(today.month, today.day)
     st.markdown(f"### ☀️ Sun is in **{zodiac}**")
     st.markdown(f"*The current season may affect scroll resonance.*")
@@ -83,19 +92,26 @@ with st.expander("🌌 Moonfire & Cosmic Current", expanded=False):
 
 # === Card Display HTML Generator ===
 def scroll_card(entry):
-    moon_emoji, moon_label = moon_phase_simple()
-    birth_month = st.selectbox("📅 Birth Month", list(range(1, 13)))
-    birth_day = st.selectbox("📅 Birth Day", list(range(1, 32)))
-    glow_color = {
-        "New Moon": "#0d0d0d",
-        "Waxing Crescent": "#4c1d95",
-        "First Quarter": "#6d28d9",
-        "Waxing Gibbous": "#8b5cf6",
-        "Full Moon": "#facc15",
-        "Waning Gibbous": "#4ade80",
-        "Last Quarter": "#2dd4bf",
-        "Waning Crescent": "#38bdf8"
-    }.get(moon_label, "#c084fc")
+    zodiac_tag = next((tag for tag in entry.get("tags", []) if tag.startswith("ZODIAC_")), None)
+    if zodiac_tag:
+       sign = zodiac_tag.replace("ZODIAC_", "").capitalize()
+       glyph = ZODIAC_GLYPHS.get(sign, "")
+       header = f"{glyph} {entry['name']}"
+        else:
+            header = entry['name']
+             moon_emoji, moon_label = moon_phase_simple()
+             birth_month = st.selectbox("📅 Birth Month", list(range(1, 13)))
+             birth_day = st.selectbox("📅 Birth Day", list(range(1, 32)))
+             glow_color = {
+             "New Moon": "#0d0d0d",
+             "Waxing Crescent": "#4c1d95",
+             "First Quarter": "#6d28d9",
+             "Waxing Gibbous": "#8b5cf6",
+             "Full Moon": "#facc15",
+             "Waning Gibbous": "#4ade80",
+             "Last Quarter": "#2dd4bf",
+             "Waning Crescent": "#38bdf8"
+        }.get(moon_label, "#c084fc")
 
     return f"""
     <div style="background: linear-gradient(135deg, #111 20%, #222 80%);

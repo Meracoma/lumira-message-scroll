@@ -13,7 +13,7 @@ from storage import save_message, load_messages
 from parser import parse_markdown
 from filters import filter_by_category, filter_by_name, filter_by_keyword, filter_by_tag
 
-=== Constants Lookups ===
+# === Constants Lookups ===
 ZODIAC_GLYPHS = {
     "Aries": "♈", "Taurus": "♉", "Gemini": "♊", "Cancer": "♋",
     "Leo": "♌", "Virgo": "♍", "Libra": "♎", "Scorpio": "♏",

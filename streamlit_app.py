@@ -123,33 +123,6 @@ def scroll_card(entry):
 
     return f"""
     <style>
-@keyframes shimmer {
-def scroll_card(entry):
-    zodiac_tag = next((tag for tag in entry.get("tags", []) if tag.startswith("ZODIAC_")), None)
-    if zodiac_tag:
-        sign = zodiac_tag.replace("ZODIAC_", "").capitalize()
-        glyph = ZODIAC_GLYPHS.get(sign, "")
-        header = f"{glyph} {entry['name']}"
-    else:
-        sign = None
-        header = entry['name']
-
-    moon_emoji, moon_label = moon_phase_simple()
-
-    # Zodiac glow first
-    glow_color = get_constellation_background(sign) if sign else "#c084fc"
-
-    # Optional: blend moon phase color
-    moon_glow_map = {
-        "New Moon": "#0d0d0d",
-        "Waxing Crescent": "#4c1d95",
-        "First Quarter": "#6d28d9",
-        "Waxing Gibbous": "#8b5cf6",
-        "Full Moon": "#facc15",
-        "Waning Gibbous": "#4ade80",
-        "Last Quarter": "#2dd4bf",
-return f"""
-    <style>
     @keyframes shimmer {{
       0% {{ background-position: 0% 50%; }}
       100% {{ background-position: 100% 50%; }}

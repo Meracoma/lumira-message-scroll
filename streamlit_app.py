@@ -16,13 +16,74 @@ from filters import filter_by_category, filter_by_name, filter_by_keyword, filte
 # === App Config ===
 st.set_page_config(page_title="📜 Lumira Message Scroll", layout="centered")
 
+# === 🌕 Moonfire Utilities ===
+from math import floor
+
+def moon_phase_simple():
+    """Returns moon phase emoji + label"""
+    now = datetime.utcnow()
+    diff = now - datetime(2001, 1, 1)  # known new moon ref
+    days = diff.days + (diff.seconds / 86400)
+    lunations = days / 29.53058867
+    pos = lunations % 1
+
+    if pos < 0.03 or pos > 0.97:
+        return "🌑", "New Moon"
+    elif pos < 0.22:
+        return "🌒", "Waxing Crescent"
+    elif pos < 0.28:
+        return "🌓", "First Quarter"
+    elif pos < 0.47:
+        return "🌔", "Waxing Gibbous"
+    elif pos < 0.53:
+        return "🌕", "Full Moon"
+    elif pos < 0.72:
+        return "🌖", "Waning Gibbous"
+    elif pos < 0.78:
+        return "🌗", "Last Quarter"
+    else:
+        return "🌘", "Waning Crescent"
+
 # === Night Mode Aware ===
 def is_night():
     now = datetime.now(pytz.timezone("America/Detroit"))
     return now.hour < 6 or now.hour >= 18
 
+# === 🌙 Cosmic Panel ===
+with st.expander("🌌 Moonfire & Cosmic Current", expanded=False):
+    moon_emoji, moon_label = moon_phase_simple()
+    st.markdown(f"### {moon_emoji} **{moon_label}**")
+    st.markdown("You are writing this scroll under the current moon phase above. 🌕")
+    st.markdown("*Consider aligning your message to the moon’s energy.*")
+
 # === Card Display HTML Generator ===
 def scroll_card(entry):
+    moon_emoji, moon_label = moon_phase_simple()
+    glow_color = {
+        "New Moon": "#0d0d0d",
+        "Waxing Crescent": "#4c1d95",
+        "First Quarter": "#6d28d9",
+        "Waxing Gibbous": "#8b5cf6",
+        "Full Moon": "#facc15",
+        "Waning Gibbous": "#4ade80",
+        "Last Quarter": "#2dd4bf",
+        "Waning Crescent": "#38bdf8"
+    }.get(moon_label, "#c084fc")
+
+    return f"""
+    <div style="background: linear-gradient(135deg, #111 20%, #222 80%);
+                border: 2px solid {glow_color};
+                border-radius: 12px;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 0 20px {glow_color}44;
+                animation: glowPulse 3s infinite alternate;">
+        <h3 style="color: #fff;">{entry['name']}</h3>
+        <p style="color: #ddd;">{entry['message']}</p>
+        <p style="font-size: 0.8rem; color: #aaa;">{entry['timestamp']}</p>
+    </div>
+    """
+
     glow_color = "#c084fc" if is_night() else "#facc15"
     return f"""
     <div style="background: linear-gradient(135deg, #111 20%, #222 80%);
@@ -81,7 +142,7 @@ st.markdown("### 🌀 Echo Tagging")
 echo_tag = st.text_input("🔖 Tag this with an Echo", placeholder="e.g. HUM_BODY, DREAM_SEED")
 
 # === Save Scroll ===
-if st.button("💾 Save Scroll"):
+if st.button("💾 Save Scroll"):):
     if message.strip():
         image_path = None
         if image_file:
@@ -125,6 +186,12 @@ if st.button("💾 Save Scroll"):
         st.success("✅ Scroll saved!")
     else:
         st.warning("Please write a message before saving.")
+
+moon_emoji, moon_label = moon_phase_simple()
+cosmic_tag = moon_label.replace(" ", "_").upper()  # e.g., FULL_MOON
+
+entry["tags"].append(f"MOON_{cosmic_tag}")
+tag_echo(entry["name"], entry["message"], f"MOONFIRE_{cosmic_tag}")
 
 # === Filters ===
 st.subheader("🔍 Filter Scrolls")

@@ -13,6 +13,12 @@ def save_message(entry, image_file=None):
     if not os.path.exists("data"):
         os.makedirs("data")
 
+    if not os.path.exists("scrolls.txt"):
+        with open("scrolls.txt", "w", encoding="utf-8") as f:
+            f.write("")
+    with open("scrolls.txt", "a", encoding="utf-8") as f:
+        f.write(str(entry) + "\n")
+    
     if not os.path.exists(IMAGE_FOLDER):
         os.makedirs(IMAGE_FOLDER)
 
@@ -44,3 +50,14 @@ def load_messages():
         with open(DATA_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     return []
+
+def load_messages():
+    entries = []
+    if os.path.exists("scrolls.txt"):
+        with open("scrolls.txt", "r", encoding="utf-8") as f:
+            for line in f:
+                try:
+                    entries.append(eval(line.strip()))
+                except Exception as e:
+                    continue
+    return entries

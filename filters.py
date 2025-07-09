@@ -2,6 +2,21 @@
 import datetime
 # filters.py
 
+def tag_echo(name, message, echo_tag):
+    with open("echoes.txt", "a", encoding="utf-8") as f:
+        timestamp = datetime.now().isoformat()
+        f.write(f"{timestamp}|{name}|{echo_tag}|{message}\n")
+
+def list_echoes():
+    echoes = []
+    if not os.path.exists("echoes.txt"):
+        return echoes
+    with open("echoes.txt", "r", encoding="utf-8") as f:
+        for line in f:
+            timestamp, name, tag, message = line.strip().split("|", 3)
+            echoes.append({"timestamp": timestamp, "name": name, "tag": tag, "message": message})
+    return echoes
+
 def filter_by_category(messages, selected_category):
     if selected_category == "All":
         return messages

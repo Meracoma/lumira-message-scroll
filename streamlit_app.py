@@ -94,7 +94,6 @@ with st.expander("🌌 Moonfire & Cosmic Current", expanded=False):
     st.markdown(f"### ☀️ Sun is in **{zodiac}** {glyph}")
     
     moon_emoji, moon_label = moon_phase_simple()
-    glow_color = moon_glow_map.get(moon_label, glow_color)
     st.markdown(f"### {moon_emoji} **{moon_label}**")
     st.markdown("You are writing this scroll under the current moon phase above. 🌕")
     st.markdown("*Consider aligning your message to the moon’s energy.*")

@@ -84,6 +84,8 @@ with st.expander("🌌 Moonfire & Cosmic Current", expanded=False):
 # === Card Display HTML Generator ===
 def scroll_card(entry):
     moon_emoji, moon_label = moon_phase_simple()
+    birth_month = st.selectbox("📅 Birth Month", list(range(1, 13)))
+    birth_day = st.selectbox("📅 Birth Day", list(range(1, 32)))
     glow_color = {
         "New Moon": "#0d0d0d",
         "Waxing Crescent": "#4c1d95",

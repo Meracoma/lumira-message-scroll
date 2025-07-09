@@ -84,21 +84,6 @@ def scroll_card(entry):
     </div>
     """
 
-    glow_color = "#c084fc" if is_night() else "#facc15"
-    return f"""
-    <div style="background: linear-gradient(135deg, #111 20%, #222 80%);
-                border: 2px solid {glow_color};
-                border-radius: 12px;
-                padding: 1rem;
-                margin-bottom: 1rem;
-                box-shadow: 0 0 20px {glow_color}44;
-                animation: glowPulse 3s infinite alternate;">
-        <h3 style="color: #fff;">{entry['name']}</h3>
-        <p style="color: #ddd;">{entry['message']}</p>
-        <p style="font-size: 0.8rem; color: #aaa;">{entry['timestamp']}</p>
-    </div>
-    """
-
 # === Image Generation ===
 def generate_scroll_image(entry):
     width, height = 800, 400

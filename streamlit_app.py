@@ -138,6 +138,10 @@ if st.button("💾 Save Scroll"):):
                 f.write(image_file.getbuffer())
 
         entry = {
+            moon_emoji, moon_label = moon_phase_simple()
+            cosmic_tag = moon_label.replace(" ", "_").upper()
+            entry["tags"].append(f"MOON_{cosmic_tag}")
+            tag_echo(entry["name"], entry["message"], f"MOONFIRE_{cosmic_tag}")
             "name": name.strip() or "Anonymous",
             "category": category,
             "message": message.strip(),
@@ -171,12 +175,6 @@ if st.button("💾 Save Scroll"):):
         st.success("✅ Scroll saved!")
     else:
         st.warning("Please write a message before saving.")
-
-moon_emoji, moon_label = moon_phase_simple()
-cosmic_tag = moon_label.replace(" ", "_").upper()  # e.g., FULL_MOON
-
-entry["tags"].append(f"MOON_{cosmic_tag}")
-tag_echo(entry["name"], entry["message"], f"MOONFIRE_{cosmic_tag}")
 
 # === Filters ===
 st.subheader("🔍 Filter Scrolls")
@@ -236,6 +234,8 @@ if entries:
         st.markdown(f"### {emoji} <span style='color:{color}'>{entry['category']}</span>", unsafe_allow_html=True)
         st.markdown(f"**🖋️ {entry['name']}**")
         st.markdown(parse_markdown(entry["message"]))
+        if "MOON_FULL_MOON" in entry["tags"]:
+            st.markdown("🌕 Saved under a **Full Moon** ✨")
         if entry.get("image_path"):
             st.image(entry["image_path"], use_column_width=True)
 

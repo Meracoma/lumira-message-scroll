@@ -51,26 +51,31 @@ def moon_phase_simple():
     else:
         return "🌘", "Waning Crescent"
 
-def get_zodiac_sign(month: int, day: int):
-    signs = [
-        ("Capricorn", (1, 1), (1, 19)),
-        ("Aquarius", (1, 20), (2, 18)),
-        ("Pisces", (2, 19), (3, 20)),
-        ("Aries", (3, 21), (4, 19)),
-        ("Taurus", (4, 20), (5, 20)),
-        ("Gemini", (5, 21), (6, 20)),
-        ("Cancer", (6, 21), (7, 22)),
-        ("Leo", (7, 23), (8, 22)),
-        ("Virgo", (8, 23), (9, 22)),
-        ("Libra", (9, 23), (10, 22)),
-        ("Scorpio", (10, 23), (11, 21)),
-        ("Sagittarius", (11, 22), (12, 21)),
-        ("Capricorn", (12, 22), (12, 31))  # Capricorn part 2
-    ]
-    for sign, start, end in signs:
-        if (month == start[0] and day >= start[1]) or (month == end[0] and day <= end[1]):
-            return sign
-    return "Unknown"
+def get_zodiac_sign(month, day):
+    if (month == 3 and day >= 21) or (month == 4 and day <= 19):
+        return "Aries"
+    elif (month == 4 and day >= 20) or (month == 5 and day <= 20):
+        return "Taurus"
+    elif (month == 5 and day >= 21) or (month == 6 and day <= 20):
+        return "Gemini"
+    elif (month == 6 and day >= 21) or (month == 7 and day <= 22):
+        return "Cancer"
+    elif (month == 7 and day >= 23) or (month == 8 and day <= 22):
+        return "Leo"
+    elif (month == 8 and day >= 23) or (month == 9 and day <= 22):
+        return "Virgo"
+    elif (month == 9 and day >= 23) or (month == 10 and day <= 22):
+        return "Libra"
+    elif (month == 10 and day >= 23) or (month == 11 and day <= 21):
+        return "Scorpio"
+    elif (month == 11 and day >= 22) or (month == 12 and day <= 21):
+        return "Sagittarius"
+    elif (month == 12 and day >= 22) or (month == 1 and day <= 19):
+        return "Capricorn"
+    elif (month == 1 and day >= 20) or (month == 2 and day <= 18):
+        return "Aquarius"
+    elif (month == 2 and day >= 19) or (month == 3 and day <= 20):
+        return "Pisces"
 
 # === Night Mode Aware ===
 def is_night():

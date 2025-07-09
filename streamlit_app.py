@@ -103,6 +103,7 @@ def scroll_card(entry):
     zodiac_tag = next((tag for tag in entry.get("tags", []) if tag.startswith("ZODIAC_")), None)
     if zodiac_tag:
         sign = zodiac_tag.replace("ZODIAC_", "").capitalize()
+        bg_color = get_constellation_background(sign) or "#fefbf3"
         glyph = ZODIAC_GLYPHS.get(sign, "")
         header = f"{glyph} {entry['name']}"
     else:

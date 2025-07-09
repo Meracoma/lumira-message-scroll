@@ -152,8 +152,6 @@ def scroll_card(entry):
     }
     glow_color = moon_glow_map.get(moon_label, glow_color)
 
-    return f"""
-    
     <style>
 @keyframes shimmer {{
   0% {{ background-position: 0% 50%; }}
@@ -167,6 +165,8 @@ def scroll_card(entry):
   border-radius: 12px;
 }}
 </style>
+    return f"""
+
 
 # === Image Generation ===
 <div class="constellation-bg" style="... existing style ...">

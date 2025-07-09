@@ -84,7 +84,6 @@ def is_night():
 
 # === 🌙 Cosmic Panel ===
 with st.expander("🌌 Moonfire & Cosmic Current", expanded=False):
-with st.expander("🌌 Moonfire & Cosmic Current", expanded=False):
     today = datetime.now()
     
     # First define zodiac

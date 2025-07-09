@@ -127,7 +127,7 @@ st.markdown("### 🌀 Echo Tagging")
 echo_tag = st.text_input("🔖 Tag this with an Echo", placeholder="e.g. HUM_BODY, DREAM_SEED")
 
 # === Save Scroll ===
-if st.button("💾 Save Scroll"):):
+if st.button("💾 Save Scroll"):
     if message.strip():
         image_path = None
         if image_file:
@@ -137,11 +137,8 @@ if st.button("💾 Save Scroll"):):
             with open(image_path, "wb") as f:
                 f.write(image_file.getbuffer())
 
+        # Build the entry dictionary
         entry = {
-            moon_emoji, moon_label = moon_phase_simple()
-            cosmic_tag = moon_label.replace(" ", "_").upper()
-            entry["tags"].append(f"MOON_{cosmic_tag}")
-            tag_echo(entry["name"], entry["message"], f"MOONFIRE_{cosmic_tag}")
             "name": name.strip() or "Anonymous",
             "category": category,
             "message": message.strip(),
@@ -150,6 +147,13 @@ if st.button("💾 Save Scroll"):):
             "timestamp": datetime.now().isoformat()
         }
 
+        # 🌕 Moonfire Tagging
+        moon_emoji, moon_label = moon_phase_simple()
+        cosmic_tag = moon_label.replace(" ", "_").upper()
+        entry["tags"].append(f"MOON_{cosmic_tag}")
+        tag_echo(entry["name"], entry["message"], f"MOONFIRE_{cosmic_tag}")
+
+        # 🔖 Echo Auto-Tagging
         echo_keywords = {
             "dream": "DREAM_SEED",
             "hum": "HUM_BODY",

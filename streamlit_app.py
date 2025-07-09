@@ -153,34 +153,20 @@ def scroll_card(entry):
     glow_color = moon_glow_map.get(moon_label, glow_color)
 
     return f"""
+    
     <style>
     @keyframes shimmer {{
-    <style>
-@keyframes shimmer {{
-  0% {{ background-position: 0% 50%; }}
-  100% {{ background-position: 100% 50%; }}
-}}
+      0% {{ background-position: 0% 50%; }}
+      100% {{ background-position: 100% 50%; }}
+    }}
 
-.constellation-bg {{
-  background: linear-gradient(270deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1));
-  background-size: 400% 400%;
-  animation: shimmer 20s ease infinite;
-  border-radius: 12px;
-}}
-</style>
-
-    <div class="constellation-bg" style="background: linear-gradient(135deg, #111 20%, #222 80%);
-                border: 2px solid {glow_color};
-                border-radius: 12px;
-                padding: 1rem;
-                margin-bottom: 1rem;
-                box-shadow: 0 0 20px {glow_color}44;
-                animation: glowPulse 3s infinite alternate;">
-        <h3 style="color: #fff;">{header}</h3>
-        <p style="color: #ddd;">{entry['message']}</p>
-        <p style="font-size: 0.8rem; color: #aaa;">{entry['timestamp']}</p>
-    </div>
-    """
+    .constellation-bg {{
+      background: linear-gradient(270deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1));
+      background-size: 400% 400%;
+      animation: shimmer 20s ease infinite;
+      border-radius: 12px;
+    }}
+    </style>
 
 # === Image Generation ===
 <div class="constellation-bg" style="... existing style ...">

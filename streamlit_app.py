@@ -94,24 +94,23 @@ with st.expander("🌌 Moonfire & Cosmic Current", expanded=False):
 def scroll_card(entry):
     zodiac_tag = next((tag for tag in entry.get("tags", []) if tag.startswith("ZODIAC_")), None)
     if zodiac_tag:
-       sign = zodiac_tag.replace("ZODIAC_", "").capitalize()
-       glyph = ZODIAC_GLYPHS.get(sign, "")
-       header = f"{glyph} {entry['name']}"
-        else:
-            header = entry['name']
-             moon_emoji, moon_label = moon_phase_simple()
-             birth_month = st.selectbox("📅 Birth Month", list(range(1, 13)))
-             birth_day = st.selectbox("📅 Birth Day", list(range(1, 32)))
-             glow_color = {
-             "New Moon": "#0d0d0d",
-             "Waxing Crescent": "#4c1d95",
-             "First Quarter": "#6d28d9",
-             "Waxing Gibbous": "#8b5cf6",
-             "Full Moon": "#facc15",
-             "Waning Gibbous": "#4ade80",
-             "Last Quarter": "#2dd4bf",
-             "Waning Crescent": "#38bdf8"
-        }.get(moon_label, "#c084fc")
+        sign = zodiac_tag.replace("ZODIAC_", "").capitalize()
+        glyph = ZODIAC_GLYPHS.get(sign, "")
+        header = f"{glyph} {entry['name']}"
+    else:
+        header = entry['name']
+
+    moon_emoji, moon_label = moon_phase_simple()
+    glow_color = {
+        "New Moon": "#0d0d0d",
+        "Waxing Crescent": "#4c1d95",
+        "First Quarter": "#6d28d9",
+        "Waxing Gibbous": "#8b5cf6",
+        "Full Moon": "#facc15",
+        "Waning Gibbous": "#4ade80",
+        "Last Quarter": "#2dd4bf",
+        "Waning Crescent": "#38bdf8"
+    }.get(moon_label, "#c084fc")
 
     return f"""
     <div style="background: linear-gradient(135deg, #111 20%, #222 80%);

@@ -157,7 +157,6 @@ def scroll_card(entry):
 
 
 # === Image Generation ===
-<div class="constellation-bg" style="... existing style ...">
 def generate_scroll_image(entry):
     width, height = 800, 400
     bg_color, text_color, font_size = "#fefbf3", "#333", 20

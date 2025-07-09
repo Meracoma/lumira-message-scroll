@@ -121,7 +121,7 @@ def scroll_card(entry):
                 margin-bottom: 1rem;
                 box-shadow: 0 0 20px {glow_color}44;
                 animation: glowPulse 3s infinite alternate;">
-        <h3 style="color: #fff;">{entry['name']}</h3>
+        <h3 style="color: #fff;">{header}</h3>
         <p style="color: #ddd;">{entry['message']}</p>
         <p style="font-size: 0.8rem; color: #aaa;">{entry['timestamp']}</p>
     </div>

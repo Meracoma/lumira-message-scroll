@@ -148,12 +148,7 @@ def scroll_card(entry):
         "Full Moon": "#facc15",
         "Waning Gibbous": "#4ade80",
         "Last Quarter": "#2dd4bf",
-        "Waning Crescent": "#38bdf8"
-    }
-    glow_color = moon_glow_map.get(moon_label, glow_color)
-
-    <style>
-@keyreturn f"""
+return f"""
     <style>
     @keyframes shimmer {{
       0% {{ background-position: 0% 50%; }}

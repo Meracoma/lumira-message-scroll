@@ -94,6 +94,22 @@ with st.expander("🌌 Moonfire & Cosmic Current", expanded=False):
     st.markdown(f"### ☀️ Sun is in **{zodiac}** {glyph}")
     
     moon_emoji, moon_label = moon_phase_simple()
+
+    # Get base glow color from sign
+    glow_color = get_constellation_background(sign) if sign else "#c084fc"
+
+    # Optional: blend moon phase glow
+    moon_glow_map = {
+        "New Moon": "#0d0d0d",
+        "Waxing Crescent": "#4c1d95",
+        "First Quarter": "#6d28d9",
+        "Waxing Gibbous": "#8b5cf6",
+        "Full Moon": "#facc15",
+        "Waning Gibbous": "#4ade80",
+        "Last Quarter": "#2dd4bf",
+        "Waning Crescent": "#38bdf8"
+    }
+    glow_color = moon_glow_map.get(moon_label, glow_color)
     st.markdown(f"### {moon_emoji} **{moon_label}**")
     st.markdown("You are writing this scroll under the current moon phase above. 🌕")
     st.markdown("*Consider aligning your message to the moon’s energy.*")

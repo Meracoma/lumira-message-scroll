@@ -72,6 +72,10 @@ def is_night():
 
 # === 🌙 Cosmic Panel ===
 with st.expander("🌌 Moonfire & Cosmic Current", expanded=False):
+    today = datetime.now()
+    zodiac = get_zodiac_sign(today.month, today.day)
+    st.markdown(f"### ☀️ Sun is in **{zodiac}**")
+    st.markdown(f"*The current season may affect scroll resonance.*")
     moon_emoji, moon_label = moon_phase_simple()
     st.markdown(f"### {moon_emoji} **{moon_label}**")
     st.markdown("You are writing this scroll under the current moon phase above. 🌕")

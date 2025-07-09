@@ -79,17 +79,21 @@ def is_night():
 
 # === 🌙 Cosmic Panel ===
 with st.expander("🌌 Moonfire & Cosmic Current", expanded=False):
+with st.expander("🌌 Moonfire & Cosmic Current", expanded=False):
     today = datetime.now()
-    glyph = ZODIAC_GLYPHS.get(zodiac, "")
-    st.markdown(f"### ☀️ Sun is in **{zodiac}** {glyph}")
+    
+    # First define zodiac
     zodiac = get_zodiac_sign(today.month, today.day)
-    st.markdown(f"### ☀️ Sun is in **{zodiac}**")
-    st.markdown(f"*The current season may affect scroll resonance.*")
+    glyph = ZODIAC_GLYPHS.get(zodiac, "")
+    
+    # Now you can safely use them
+    st.markdown(f"### ☀️ Sun is in **{zodiac}** {glyph}")
+    
     moon_emoji, moon_label = moon_phase_simple()
     st.markdown(f"### {moon_emoji} **{moon_label}**")
     st.markdown("You are writing this scroll under the current moon phase above. 🌕")
     st.markdown("*Consider aligning your message to the moon’s energy.*")
-
+    
 # === Card Display HTML Generator ===
 def scroll_card(entry):
     zodiac_tag = next((tag for tag in entry.get("tags", []) if tag.startswith("ZODIAC_")), None)

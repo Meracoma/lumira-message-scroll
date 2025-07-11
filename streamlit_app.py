@@ -207,35 +207,15 @@ with st.expander("🌌 Moonfire & Cosmic Current", expanded=False):
     
 # === Card Display HTML Generator ===
 def scroll_card(entry):
-    zodiac_tag = next((tag for tag in entry.get("tags", []) if tag.startswith("ZODIAC_")), None)
-    if zodiac_tag:
-        sign = zodiac_tag.replace("ZODIAC_", "").capitalize()
-        bg_color = get_constellation_background(sign) or "#fefbf3"
-        glyph = ZODIAC_GLYPHS.get(sign, "")
-        header = f"{glyph} {entry['name']}"
-    else:
-        header = entry['name']
-
+    zodiac_tag = next((tag for tag in entry.get("tags", []), None) if tag.startswith("ZODIAC_"), None)
+    sign = zodiac_tag.replace("ZODIAC_", "").capitalize() if zodiac_tag else None
+    glyph = ZODIAC_GLYPHS.get(sign, "") if sign else ""
+    bg_color = get_constellation_background(sign) if sign else "#1a1a1a"
     moon_emoji, moon_label = moon_phase_simple()
-    st.markdown(render_constellation_card(entry, moon_label, "Cancer"), unsafe_allow_html=True)
+    glow_color = moon_glow_map.get(moon_label, "#ccc")
 
-    # Get base glow color from sign
-    glow_color = get_constellation_background(sign) if sign else "#c084fc"
+    header = f"{glyph} {entry['name']}" if glyph else entry['name']
 
-    # Optional: blend moon phase glow
-    moon_glow_map = {
-        "New Moon": "#0d0d0d",
-        "Waxing Crescent": "#4c1d95",
-        "First Quarter": "#6d28d9",
-        "Waxing Gibbous": "#8b5cf6",
-        "Full Moon": "#facc15",
-        "Waning Gibbous": "#4ade80",
-        "Last Quarter": "#2dd4bf",
-        "Waning Crescent": "#38bdf8"
-    }
-    glow_color = moon_glow_map.get(moon_label, glow_color)
-
-    # SVG Star Trail – Cancer example (customize per sign later)
     svg_trail = """
     <svg width="100%" height="100%" style="position:absolute; top:0; left:0; z-index:0; pointer-events:none;" viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
       <polyline points="100,120 180,60 260,100 340,40 420,90 500,30 580,80" 
@@ -248,6 +228,26 @@ def scroll_card(entry):
     </svg>
     """
 
+    # Favorite and Echo Tag logic
+    favorite_button = st.button(f"⭐ Favorite this Scroll", key=f"fav_{entry['timestamp']}")
+    if favorite_button:
+        st.success(f"⭐ Scroll '{entry['name']}' saved to Favorites.")
+        tag_echo(entry["name"], entry["message"], "FAVORITE_SCROLL")
+
+    echo_button = st.button(f"📣 Echo to Log", key=f"echo_{entry['timestamp']}")
+    if echo_button:
+        tag_echo(entry["name"], entry["message"], "USER_ECHO")
+        st.success(f"📣 Sent to Echo Log!")
+
+    # Generate clickable tag links with rerun behavior
+    tag_links = ""
+    if entry.get("tags"):
+        tag_links = " ".join([
+            f"<a href='?tag={tag}' style='background:#fef3c7; color:#92400e; padding:2px 6px; border-radius:5px; margin-right:5px;'>{tag}</a>"
+            for tag in entry["tags"]
+        ])
+
+    # Assemble card
     return f"""
     <style>
     @keyframes shimmer {{
@@ -260,29 +260,28 @@ def scroll_card(entry):
       background-size: 400% 400%;
       animation: shimmer 20s ease infinite;
       border-radius: 12px;
+      padding: 20px;
+      position: relative;
+      margin-bottom: 20px;
+      box-shadow: 0 0 20px {glow_color};
     }}
     </style>
 
-    <div class="constellation-bg" style="...">
-    
-    <!-- ⭐️ 1. Background SVG Star Trail -->
-    {svg_trail}
-
-    <!-- 🌙 2. Glyph Overlay (e.g. ♋ for Cancer) -->
-    f"<div style='position:absolute; top:10px; right:20px; font-size:4rem; opacity:0.1;'>{glyph}</div>"
-        ♋
+    <div class="constellation-bg">
+        {svg_trail}
+        <div style="position:absolute; top:10px; right:20px; font-size:4rem; opacity:0.1;">{glyph}</div>
+        <div style="position: relative; z-index: 1;">
+            <h3 style="color: #fff;">
+                {header} – {moon_emoji}
+                <span style="font-size: 0.8rem; color: #aaa;">{moon_label}</span>
+            </h3>
+            <p style="color: #ddd;">{entry['message']}</p>
+            <p style="font-size: 0.8rem; color: #aaa;">{entry['timestamp']}</p>
+            <div style="margin-top: 10px;">🏷️ Tags: {tag_links}</div>
+        </div>
     </div>
+    """
 
-    <!-- ✨ 3. Foreground Content -->
-    <div style="position: relative; z-index: 1;">
-        <h3 style="color: #fff;">
-        {header} – {moon_emoji}
-        <span style="font-size: 0.8rem; color: #aaa;">{moon_label}</span>
-    </h3>
-    <p style="color: #ddd;">{entry['message']}</p>
-    <p style="font-size: 0.8rem; color: #aaa;">{entry['timestamp']}</p>
-</div>
-"""
 
 
 # === Image Generation ===

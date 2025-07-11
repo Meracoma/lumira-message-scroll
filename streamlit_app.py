@@ -154,35 +154,72 @@ def get_zodiac_sign(month, day):
 def render_constellation_card(entry, moon_label, sign="Cancer"):
     glyph = ZODIAC_GLYPHS.get(sign, "♋")
     glow_color = MOON_GLOW_MAP.get(moon_label, "#c084fc")
-    
+    name_display = entry['name']
+
+    # Check if marked as favorite
+    is_favorite = entry.get("favorite", False)
+    if is_favorite:
+        name_display = f"⭐ {name_display}"
+
+    # Render tags as clickable filters
+    tag_html = ""
+    if entry.get("tags"):
+        tag_html = "🏷️ "
+        for tag in entry["tags"]:
+            tag_html += f"""<a href='?tag={tag}' style='
+                background:#fef3c7;
+                color:#92400e;
+                padding:2px 6px;
+                border-radius:5px;
+                margin-right:5px;
+                text-decoration:none;'>{tag}</a>"""
+
     html = f"""
     <style>
     @keyframes shimmer {{
         0% {{ background-position: 0% 50%; }}
         100% {{ background-position: 100% 50%; }}
     }}
-
     .constellation-bg {{
         background: linear-gradient(270deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1));
         background-size: 400% 400%;
         animation: shimmer 20s ease infinite;
         border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 2px solid {glow_color};
+        box-shadow: 0 0 20px {glow_color}44;
     }}
     </style>
 
-    <div class="constellation-bg" style="
-        border: 2px solid {glow_color};
-        border-radius: 12px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 0 20px {glow_color}44;
-        animation: glowPulse 3s infinite alternate;">
-        <h3 style="color: #fff;">{glyph} {entry['name']}</h3>
+    <div class="constellation-bg">
+        <h3 style="color: #fff;">{glyph} {name_display}</h3>
         <p style="color: #ddd;">{entry['message']}</p>
         <p style="font-size: 0.8rem; color: #aaa;">{entry['timestamp']}</p>
+        <div style="margin-top: 0.5rem;">{tag_html}</div>
     </div>
     """
-    return html
+
+    # Render the card
+    st.components.v1.html(html, height=250)
+
+    # Echo + Favorite UI
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        if st.button("📣 Send to Echo Log", key=f"echo_{entry['timestamp']}"):
+            tag_echo(entry["name"], entry["message"], "SCROLL_PING")
+            st.success("📡 Scroll echoed to memory log!")
+
+    with col2:
+        if st.checkbox("⭐ Mark as Favorite", value=is_favorite, key=f"fav_{entry['timestamp']}"):
+            entry["favorite"] = True
+            st.session_state[f"favorite_{entry['timestamp']}"] = True
+        else:
+            entry["favorite"] = False
+            st.session_state[f"favorite_{entry['timestamp']}"] = False
+
+    return ""
+    
 
 # === Night Mode Aware ===
 def is_night():

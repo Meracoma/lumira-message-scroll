@@ -335,28 +335,20 @@ image_file = st.file_uploader("🖼️ Upload an image (optional)", type=["png",
 tags_input = st.text_input("🏷️ Add Tags (comma-separated)", placeholder="e.g. Lucid, Awakening, Wolf Dream")
 
 # === Optional Echo Tag ===
-st.markdown("### 🌀 Echo Tagging")
-echo_tag = st.text_input("🔖 Tag this with an Echo", placeholder="e.g. HUM_BODY, DREAM_SEED")
-
-# === Save Scroll ===
+st.markdown("### 🌀 Optional Echo Tagging")
+echo_tag = st.text_input("🔖 Add Echo Tag (optional)", placeholder="e.g. HUM_BODY, DREAM_SEED, YOUR_TAG")
+st.caption("If left blank, echo tagging will be auto-generated from scroll tags or content.")
+# === 🔥 Save New Scroll Entry ===
 if st.button("💾 Save Scroll"):
     if message.strip():
-        image_path = None
-        if image_file:
-            uploads_dir = "uploads"
-            os.makedirs(uploads_dir, exist_ok=True)
-            image_path = os.path.join(uploads_dir, image_file.name)
-            with open(image_path, "wb") as f:
-                f.write(image_file.getbuffer())
-
-        # Build the entry dictionary
         entry = {
-            "name": name.strip() or "Anonymous",
-            "category": category,
+            "name": name.strip(),
             "message": message.strip(),
-            "tags": [tag.strip() for tag in tags_input.split(",") if tag.strip()],
-            "image_path": image_path,
-            "timestamp": datetime.now().isoformat()
+            "category": category,
+            "tags": tags,
+            "timestamp": datetime.datetime.now().isoformat(),
+            "image_path": saved_image_path if "saved_image_path" in locals() else None,
+            "favorite": st.checkbox("⭐ Mark as Favorite")
         }
 
         # 🌕 Moonfire Tagging
@@ -364,6 +356,10 @@ if st.button("💾 Save Scroll"):
         cosmic_tag = moon_label.replace(" ", "_").upper()
         entry["tags"].append(f"MOON_{cosmic_tag}")
         tag_echo(entry["name"], entry["message"], f"MOONFIRE_{cosmic_tag}")
+
+        # ♈ Zodiac Tagging (if dropdown is selected)
+        if selected_glyph:
+            entry["tags"].append(f"ZODIAC_{selected_glyph}")
 
         # 🔖 Echo Auto-Tagging
         echo_keywords = {
@@ -385,14 +381,15 @@ if st.button("💾 Save Scroll"):
                         break
         else:
             tag_echo(entry["name"], entry["message"], echo_tag.strip())
-            st.success(f"Echo '{echo_tag.strip()}' saved successfully.")
+            st.success(f"📣 Echo '{echo_tag.strip()}' saved successfully.")
 
         save_message(entry)
         st.success("✅ Scroll saved!")
-    else:
-        st.warning("Please write a message before saving.")
 
-# === Filters ===
+    else:
+        st.warning("⚠️ Please write a message before saving.")
+
+# === 🔍 Filters ===
 st.subheader("🔍 Filter Scrolls")
 filter_option = st.selectbox("Filter by", ["All", "Category", "Name", "Keyword", "Tag"])
 filter_value = st.text_input("Filter value:")
@@ -402,9 +399,11 @@ query_params = st.query_params
 selected_tag = query_params.get("tag", [None])[0]
 
 if selected_tag:
-    st.info(f"📌 Showing scrolls tagged with: `{selected_tag}`")
+    # 🔁 Instantly rerun tag filter
     entries = filter_by_tag(entries, selected_tag)
+    st.experimental_rerun()  # instantly apply tag filter dynamically
 
+# Apply filters
 if filter_option == "Category":
     entries = filter_by_category(entries, filter_value)
 elif filter_option == "Name":
@@ -413,7 +412,7 @@ elif filter_option == "Keyword":
     entries = filter_by_keyword(entries, filter_value)
 elif filter_option == "Tag":
     entries = filter_by_tag(entries, filter_value)
-
+ 
 # === Optional: Clear Filter ===
 if selected_tag:
     if st.button("🔄 Clear Tag Filter"):

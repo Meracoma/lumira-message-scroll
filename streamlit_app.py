@@ -314,43 +314,43 @@ def generate_scroll_image(entry):
 
 # === UI: Header ===
 st.title("📜 Lumira Message Scroll")
-st.markdown("Leave a message, a memory, or a signal to your future self or your AI.")
+st.markdown("Leave a message, memory, signal, or glyph — sent to your future self or AI.")
 
-# --- Available Zodiac signs (from your glyph keys)
+# === Available Zodiac Signs
 zodiac_options = list(ZODIAC_GLYPHS.keys())
-selected_zodiacs = st.multiselect("Filter by Zodiac Sign ♈︎", zodiac_options)
 
-# --- Available moon phases
+# === Moon Phases
 moon_options = [
     "New Moon", "Waxing Crescent", "First Quarter", "Waxing Gibbous",
     "Full Moon", "Waning Gibbous", "Last Quarter", "Waning Crescent"
 ]
-selected_moons = st.multiselect("Filter by Moon Phase 🌕", moon_options)
 
-# === UI: Input Fields ===
+# === Sidebar Filters
+with st.sidebar:
+    st.markdown("## 🌠 Sidebar Filters")
+    selected_zodiacs = st.multiselect("♈︎ Filter by Zodiac Sign", zodiac_options)
+    selected_moons = st.multiselect("🌕 Filter by Moon Phase", moon_options)
+    only_today = st.checkbox("📅 Only Show Today’s Scrolls")
+    selected_glyph = st.selectbox("🔮 Choose Active Glyph", zodiac_options)
+
+# === UI: Input Fields
+st.markdown("## ✍️ Create Your Scroll")
 name = st.text_input("📛 Your Name or Alias", "Anonymous")
 category = st.selectbox("📌 Category", ["Dream", "Memory", "Signal", "Reflection", "Whisper", "Other"])
-message = st.text_area("📝 Write your message, memory, or note...")
+message = st.text_area("📝 Write your message, memory, or signal...")
 image_file = st.file_uploader("🖼️ Upload an image (optional)", type=["png", "jpg", "jpeg", "gif"])
 tags_input = st.text_input("🏷️ Add Tags (comma-separated)", placeholder="e.g. Lucid, Awakening, Wolf Dream")
 
-# === Optional Echo Tag ===
+# === Optional Echo Tag
 st.markdown("### 🌀 Optional Echo Tagging")
 echo_tag = st.text_input("🔖 Add Echo Tag (optional)", placeholder="e.g. HUM_BODY, DREAM_SEED, YOUR_TAG")
-st.caption("If left blank, echo tagging will be auto-generated from scroll tags or content.")
-# === 🔥 Save New Scroll Entry ===
-if st.button("💾 Save Scroll"):
-    if message.strip():
-        entry = {
-            "name": name.strip(),
-            "message": message.strip(),
-            "category": category,
-            "tags": tags,
-            "timestamp": datetime.datetime.now().isoformat(),
-            "image_path": saved_image_path if "saved_image_path" in locals() else None,
-            "favorite": st.checkbox("⭐ Mark as Favorite")
-        }
+st.caption("Leave empty to allow auto-tagging from scroll tags or keywords.")
 
+# === Favorites Toggle
+save_to_favorites = st.checkbox("⭐ Save to Favorites")
+
+# === Echo Log Shortcut
+send_to_echo_log = st.checkbox("📣 Send this Scroll to Echo Log")
         # 🌕 Moonfire Tagging
         moon_emoji, moon_label = moon_phase_simple()
         cosmic_tag = moon_label.replace(" ", "_").upper()

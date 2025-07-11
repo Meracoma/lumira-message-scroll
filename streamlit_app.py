@@ -77,6 +77,39 @@ def get_zodiac_sign(month, day):
     elif (month == 2 and day >= 19) or (month == 3 and day <= 20):
         return "Pisces"
 
+def render_constellation_card(entry, moon_label, sign="Cancer"):
+    glyph = ZODIAC_GLYPHS.get(sign, "♋")
+    glow_color = MOON_GLOW_MAP.get(moon_label, "#c084fc")
+    
+    html = f"""
+    <style>
+    @keyframes shimmer {{
+        0% {{ background-position: 0% 50%; }}
+        100% {{ background-position: 100% 50%; }}
+    }}
+
+    .constellation-bg {{
+        background: linear-gradient(270deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1));
+        background-size: 400% 400%;
+        animation: shimmer 20s ease infinite;
+        border-radius: 12px;
+    }}
+    </style>
+
+    <div class="constellation-bg" style="
+        border: 2px solid {glow_color};
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 0 20px {glow_color}44;
+        animation: glowPulse 3s infinite alternate;">
+        <h3 style="color: #fff;">{glyph} {entry['name']}</h3>
+        <p style="color: #ddd;">{entry['message']}</p>
+        <p style="font-size: 0.8rem; color: #aaa;">{entry['timestamp']}</p>
+    </div>
+    """
+    return html
+
 # === Night Mode Aware ===
 def is_night():
     now = datetime.now(pytz.timezone("America/Detroit"))
@@ -110,6 +143,7 @@ def scroll_card(entry):
         header = entry['name']
 
     moon_emoji, moon_label = moon_phase_simple()
+    st.markdown(render_constellation_card(entry, moon_label, "Cancer"), unsafe_allow_html=True)
 
     # Get base glow color from sign
     glow_color = get_constellation_background(sign) if sign else "#c084fc"

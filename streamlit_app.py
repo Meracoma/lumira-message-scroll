@@ -161,6 +161,19 @@ def scroll_card(entry):
     }
     glow_color = moon_glow_map.get(moon_label, glow_color)
 
+    # SVG Star Trail – Cancer example (customize per sign later)
+    svg_trail = """
+    <svg width="100%" height="100%" style="position:absolute; top:0; left:0; z-index:0; pointer-events:none;" viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
+      <polyline points="100,120 180,60 260,100 340,40 420,90 500,30 580,80" 
+                fill="none" 
+                stroke="rgba(255,255,255,0.07)" 
+                stroke-width="2" 
+                stroke-linecap="round">
+        <animate attributeName="stroke-opacity" values="0.07;0.2;0.07" dur="5s" repeatCount="indefinite" />
+      </polyline>
+    </svg>
+    """
+
     return f"""
     <style>
     @keyframes shimmer {{
@@ -176,17 +189,24 @@ def scroll_card(entry):
     }}
     </style>
 
-    <div class="constellation-bg" style="background: linear-gradient(135deg, #111 20%, #222 80%);
-                border: 2px solid {glow_color};
-                border-radius: 12px;
-                padding: 1rem;
-                margin-bottom: 1rem;
-                box-shadow: 0 0 20px {glow_color}44;
-                animation: glowPulse 3s infinite alternate;">
+    <div class="constellation-bg" style="...">
+    
+    <!-- ⭐️ 1. Background SVG Star Trail -->
+    {svg_trail}
+
+    <!-- 🌙 2. Glyph Overlay (e.g. ♋ for Cancer) -->
+    f"<div style='position:absolute; top:10px; right:20px; font-size:4rem; opacity:0.1;'>{glyph}</div>"
+        ♋
+    </div>
+
+    <!-- ✨ 3. Foreground Content -->
+    <div style="position: relative; z-index: 1;">
         <h3 style="color: #fff;">{header}</h3>
         <p style="color: #ddd;">{entry['message']}</p>
         <p style="font-size: 0.8rem; color: #aaa;">{entry['timestamp']}</p>
     </div>
+
+</div>
 """
 
 

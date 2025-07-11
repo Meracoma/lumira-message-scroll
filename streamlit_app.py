@@ -201,11 +201,12 @@ def scroll_card(entry):
 
     <!-- ✨ 3. Foreground Content -->
     <div style="position: relative; z-index: 1;">
-        <h3 style="color: #fff;">{header}</h3>
-        <p style="color: #ddd;">{entry['message']}</p>
-        <p style="font-size: 0.8rem; color: #aaa;">{entry['timestamp']}</p>
-    </div>
-
+        <h3 style="color: #fff;">
+        {header} – {moon_emoji}
+        <span style="font-size: 0.8rem; color: #aaa;">{moon_label}</span>
+    </h3>
+    <p style="color: #ddd;">{entry['message']}</p>
+    <p style="font-size: 0.8rem; color: #aaa;">{entry['timestamp']}</p>
 </div>
 """
 

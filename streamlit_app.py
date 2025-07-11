@@ -191,19 +191,37 @@ def is_night():
 
 # === 🌙 Cosmic Panel ===
 with st.expander("🌌 Moonfire & Cosmic Current", expanded=False):
-    today = datetime.now()
-    
-    # First define zodiac
+    today = datetime.now(pytz.timezone("America/Detroit"))
+
+    # ☀️ Zodiac Sign of the Day
     zodiac = get_zodiac_sign(today.month, today.day)
     glyph = ZODIAC_GLYPHS.get(zodiac, "")
-    
-    # Now you can safely use them
     st.markdown(f"### ☀️ Sun is in **{zodiac}** {glyph}")
-    
+
+    # 🌙 Moon Phase
     moon_emoji, moon_label = moon_phase_simple()
     st.markdown(f"### {moon_emoji} **{moon_label}**")
     st.markdown("You are writing this scroll under the current moon phase above. 🌕")
     st.markdown("*Consider aligning your message to the moon’s energy.*")
+
+    # 🌌 Manual Checkbox for Scroll Tagging
+    cosmic_toggle = st.checkbox("💫 Add current Zodiac + Moon Phase to my scroll")
+
+    if cosmic_toggle:
+        st.session_state["cosmic_tags"] = [
+            f"ZODIAC_{zodiac.upper()}",
+            f"MOON_{moon_label.replace(' ', '_').upper()}"
+        ]
+        st.success(f"✨ Cosmic tags ready to apply: `{zodiac.upper()}` & `{moon_label}`")
+    else:
+        st.session_state["cosmic_tags"] = []
+
+    # Optional: Echo cosmic alignment directly
+    if is_night():
+        st.info("🌌 It's nighttime – a powerful window for memory or dream scrolls.")
+        if st.button("📣 Echo this Cosmic Alignment"):
+            tag_echo("Cosmic Pulse", f"{zodiac} · {moon_label}", f"MOONFIRE_{moon_label.replace(' ', '_').upper()}")
+            st.success("🔮 Cosmic Echo saved.")
     
 # === Card Display HTML Generator ===
 def scroll_card(entry):

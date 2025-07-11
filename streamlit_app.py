@@ -8,7 +8,56 @@ import os
 import pytz
 
 # === External Modular Functions ===
-from echo import tag_echo, list_echoes
+from echo import tag_echo, # === Constants Lookups ===
+ZODIAC_GLYPHS = {
+    "Aries": "♈", "Taurus": "♉", "Gemini": "♊", "Cancer": "♋",
+    "Leo": "♌", "Virgo": "♍", "Libra": "♎", "Scorpio": "♏",
+    "Sagittarius": "♐", "Capricorn": "♑", "Aquarius": "♒", "Pisces": "♓"
+}
+
+# === App Config ===
+st.set_page_config(page_title="📜 Lumira Message Scroll", layout="centered")
+
+# === 🌕 Moonfire Utilities ===
+from math import floor
+
+def moon_phase_simple():
+    """Returns moon phase emoji + label"""
+    now = datetime.utcnow()
+    diff = now - datetime(2001, 1, 1)  # known new moon ref
+    days = diff.days + (diff.seconds / 86400)
+    lunations = days / 29.53058867
+    pos = lunations % 1
+
+    if pos < 0.03 or pos > 0.97:
+        return "🌑", "New Moon"
+    elif pos < 0.22:
+        return "🌒", "Waxing Crescent"
+    elif pos < 0.28:
+        return "🌓", "First Quarter"
+    elif pos < 0.47:
+        return "🌔", "Waxing Gibbous"
+    elif pos < 0.53:
+        return "🌕", "Full Moon"
+    elif pos < 0.72:
+        return "🌖", "Waning Gibbous"
+    elif pos < 0.78:
+        return "🌗", "Last Quarter"
+    else:
+        return "🌘", "Waning Crescent"
+
+def get_zodiac_sign(month, day):
+    if (month == 3 and day >= 21) or (month == 4 and day <= 19):
+        return "Aries"
+    elif (month == 4 and day >= 20) or (month == 5 and day <= 20):
+        return "Taurus"
+    elif (month == 5 and day >= 21) or (month == 6 and day <= 20):
+        return "Gemini"
+    elif (month == 6 and day >= 21) or (month == 7 and day <= 22):
+        return "Cancer"
+    elif (month == 7 and day >= 23) or (month == 8 and day <= 22):
+        return "Leo"
+    elif (month == 8 and day >list_echoes
 from storage import save_message, load_messages
 from parser import parse_markdown
 from filters import filter_by_category, filter_by_name, filter_by_keyword, filter_by_tag
@@ -242,6 +291,17 @@ def generate_scroll_image(entry):
 st.title("📜 Lumira Message Scroll")
 st.markdown("Leave a message, a memory, or a signal to your future self or your AI.")
 
+# --- Available Zodiac signs (from your glyph keys)
+zodiac_options = list(ZODIAC_GLYPHS.keys())
+selected_zodiacs = st.multiselect("Filter by Zodiac Sign ♈︎", zodiac_options)
+
+# --- Available moon phases
+moon_options = [
+    "New Moon", "Waxing Crescent", "First Quarter", "Waxing Gibbous",
+    "Full Moon", "Waning Gibbous", "Last Quarter", "Waning Crescent"
+]
+selected_moons = st.multiselect("Filter by Moon Phase 🌕", moon_options)
+
 # === UI: Input Fields ===
 name = st.text_input("📛 Your Name or Alias", "Anonymous")
 category = st.selectbox("📌 Category", ["Dream", "Memory", "Signal", "Reflection", "Whisper", "Other"])
@@ -384,6 +444,28 @@ if entries:
         st.markdown("---")
 else:
     st.info("No scrolls found.")
+
+# Helper function to determine zodiac from tags
+def get_entry_zodiac(entry):
+    return next((tag.replace("ZODIAC_", "") for tag in entry.get("tags", []) if tag.startswith("ZODIAC_")), None)
+
+# Filter entries
+filtered_entries = []
+for entry in entries:
+    zodiac = get_entry_zodiac(entry)
+    _, moon_label = moon_phase_simple()
+
+    zodiac_match = (not selected_zodiacs) or (zodiac in selected_zodiacs)
+    moon_match = (not selected_moons) or (moon_label in selected_moons)
+
+    if zodiac_match and moon_match:
+        filtered_entries.append(entry)
+
+for entry in filtered_entries:
+    st.markdown(scroll_card(entry), unsafe_allow_html=True)
+    with st.sidebar:
+    selected_zodiacs = st.multiselect("Filter by Zodiac Sign ♈︎", zodiac_options)
+    selected_moons = st.multiselect("Filter by Moon Phase 🌕", moon_options)
 
 # === Echo View ===
 st.subheader("🧠 Echo Log")

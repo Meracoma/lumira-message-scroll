@@ -9,11 +9,19 @@ import pytz
 from storage import save_message, load_messages
 from parser import parse_markdown
 from filters import filter_by_category, filter_by_name, filter_by_keyword, filter_by_tag
+import datetime
+
+# === 🔭 Zodiac + Moon Filter System ===
+
+# Get current date
+now = datetime.datetime.now()
+today = now.date()
 
 # === External Modular Functions ===
 from echo import (
     tag_echo,  # === Constants Lookups ===
 )
+
 ZODIAC_GLYPHS = {
     "Aries": "♈", "Taurus": "♉", "Gemini": "♊", "Cancer": "♋",
     "Leo": "♌", "Virgo": "♍", "Libra": "♎", "Scorpio": "♏",
@@ -425,6 +433,101 @@ if search_query:
 # === Scroll Display ===
 st.subheader("📖 Scroll Archive")
 
+# 🌌 Sidebar: Glyph + Filters
+with st.sidebar:
+    st.markdown("## 🌟 Active Glyph")
+    selected_glyph = st.selectbox("Choose your active glyph:", zodiac_options)
+
+    selected_zodiacs = st.multiselect("Filter by Zodiac Sign ♈︎", zodiac_options)
+    selected_moons = st.multiselect("Filter by Moon Phase 🌕", moon_options)
+
+    only_today = st.toggle("📅 Only show today’s scrolls")
+
+# 🎨 Helper dictionaries
+category_emojis = {
+    "Dream": "🌙", "Memory": "🧠", "Signal": "📡",
+    "Reflection": "🪞", "Whisper": "🌬️", "Other": "✨"
+}
+category_colors = {
+    "Dream": "#6a5acd", "Memory": "#2e8b57", "Signal": "#ff4500",
+    "Reflection": "#20b2aa", "Whisper": "#ff69b4", "Other": "#708090"
+}
+
+# 🌀 Helper function to get zodiac from entry
+def get_entry_zodiac(entry):
+    return next((tag.replace("ZODIAC_", "") for tag in entry.get("tags", []) if tag.startswith("ZODIAC_")), None)
+
+# 📅 Optional: Filter only today
+today_str = datetime.datetime.now().strftime("%Y-%m-%d")
+
+# 🧹 Filter entries
+filtered_entries = []
+for entry in entries:
+    zodiac = get_entry_zodiac(entry)
+    _, moon_label = moon_phase_simple()
+
+    date_match = (not only_today) or (entry.get("timestamp", "").startswith(today_str))
+    zodiac_match = (not selected_zodiacs) or (zodiac in selected_zodiacs)
+    moon_match = (not selected_moons) or (moon_label in selected_moons)
+
+    if zodiac_match and moon_match and date_match:
+        filtered_entries.append(entry)
+
+# 📜 Display scrolls
+if filtered_entries:
+    for entry in reversed(filtered_entries):
+        # Style
+        emoji = category_emojis.get(entry.get("category", "Other"), "🌀")
+        color = category_colors.get(entry.get("category", "Other"), "#fff")
+
+        # Header
+        st.markdown(f"### {emoji} <span style='color:{color}'>{entry.get('category', 'Unknown')}</span>", unsafe_allow_html=True)
+        st.markdown(f"**🖋️ {entry.get('name', 'Unnamed')}**")
+
+        # Content
+        st.markdown(parse_markdown(entry.get("message", "")))
+
+        if "MOON_FULL_MOON" in entry.get("tags", []):
+            st.markdown("🌕 Saved under a **Full Moon** ✨")
+
+        if entry.get("image_path"):
+            st.image(entry["image_path"], use_column_width=True)
+
+        # Tags
+        if entry.get("tags"):
+            tag_links = " ".join([
+                f"<a href='?tag={tag}' style='background:#fef3c7; color:#92400e; padding:2px 6px; border-radius:5px; margin-right:5px; text-decoration:none;'>{tag}</a>"
+                for tag in entry["tags"]
+            ])
+            st.markdown(f"🏷️ Tags: {tag_links}", unsafe_allow_html=True)
+
+        # Timestamp
+        st.caption(f"⏳ {entry.get('timestamp', 'No timestamp')}")
+
+        # 📥 Download scroll as image
+        scroll_image = generate_scroll_image(entry)
+        with st.expander("📥 Download Scroll"):
+            st.download_button(
+                "📜 Download as PNG",
+                data=scroll_image,
+                file_name=f"{entry.get('name', 'scroll').replace(' ', '_')}_scroll.png",
+                mime="image/png"
+            )
+
+        # ❤️ Reaction Buttons (Future Hook)
+        col1, col2 = st.columns([1, 1])
+        with col1:
+            if st.button(f"❤️ Save", key=f"save_{entry.get('name', '')}"):
+                st.toast("Saved to favorites (coming soon)")
+
+        with col2:
+            if st.button(f"🔁 Echo", key=f"echo_{entry.get('name', '')}"):
+                st.toast("Echoed into the stream (future feature)")
+
+        st.markdown("---")
+else:
+    st.info("No scrolls found for this view.")
+
 category_emojis = {
     "Dream": "🌙", "Memory": "🧠", "Signal": "📡",
     "Reflection": "🪞", "Whisper": "🌬️", "Other": "✨"
@@ -462,29 +565,44 @@ if entries:
 else:
     st.info("No scrolls found.")
 
-# Helper function to determine zodiac from tags
-def get_entry_zodiac(entry):
-    return next((tag.replace("ZODIAC_", "") for tag in entry.get("tags", []) if tag.startswith("ZODIAC_")), None)
+# Sidebar controls
+with st.sidebar:
+    st.markdown("## 🔍 Filter Scrolls")
+    selected_zodiacs = st.multiselect("♈︎ Zodiac Sign", zodiac_options)
+    selected_moons = st.multiselect("🌕 Moon Phase", moon_options)
+    
+    st.markdown("## 🗓️ Date Filter")
+    only_today = st.checkbox("📅 Only show today’s scrolls")
 
-# Filter entries
+    st.markdown("## 🌟 Choose a Glyph")
+    selected_glyph = st.selectbox("Pick your active zodiac glyph", zodiac_options)
+
+# Filter logic
 filtered_entries = []
 for entry in entries:
-    zodiac = get_entry_zodiac(entry)
-    _, moon_label = moon_phase_simple()
+    entry_zodiac = get_entry_zodiac(entry)
+    _, entry_moon = moon_phase_simple()
 
-    zodiac_match = (not selected_zodiacs) or (zodiac in selected_zodiacs)
-    moon_match = (not selected_moons) or (moon_label in selected_moons)
+    zodiac_ok = not selected_zodiacs or (entry_zodiac in selected_zodiacs)
+    moon_ok = not selected_moons or (entry_moon in selected_moons)
 
-    if zodiac_match and moon_match:
+    date_ok = True
+    if only_today:
+        entry_date_str = entry.get("timestamp", "")[:10]
+        try:
+            entry_date = datetime.datetime.strptime(entry_date_str, "%Y-%m-%d").date()
+            date_ok = (entry_date == today)
+        except:
+            date_ok = False  # if date format is invalid
+
+    if zodiac_ok and moon_ok and date_ok:
         filtered_entries.append(entry)
 
+# Show results
 for entry in filtered_entries:
     st.markdown(scroll_card(entry), unsafe_allow_html=True)
-    with st.sidebar:
-    selected_zodiacs = st.multiselect("Filter by Zodiac Sign ♈︎", zodiac_options)
-    selected_moons = st.multiselect("Filter by Moon Phase 🌕", moon_options)
 
-# === Echo View ===
+# === 🧠 Echo Log ===
 st.subheader("🧠 Echo Log")
 if st.checkbox("📂 Show Echoes"):
     echo_data = list_echoes()
@@ -495,6 +613,136 @@ if st.checkbox("📂 Show Echoes"):
             st.markdown("---")
     else:
         st.info("No echoes found.")
+
+# === 📖 Scroll Archive ===
+st.subheader("📖 Scroll Archive")
+
+category_emojis = {
+    "Dream": "🌙", "Memory": "🧠", "Signal": "📡",
+    "Reflection": "🪞", "Whisper": "🌬️", "Other": "✨"
+}
+category_colors = {
+    "Dream": "#6a5acd", "Memory": "#2e8b57", "Signal": "#ff4500",
+    "Reflection": "#20b2aa", "Whisper": "#ff69b4", "Other": "#708090"
+}
+
+if filtered_entries:
+    for entry in reversed(filtered_entries):
+        # Style
+        emoji = category_emojis.get(entry.get("category", "Other"), "🌀")
+        color = category_colors.get(entry.get("category", "Other"), "#fff")
+
+        st.markdown(f"### {emoji} <span style='color:{color}'>{entry.get('category', 'Unknown')}</span>", unsafe_allow_html=True)
+        st.markdown(f"**🖋️ {entry.get('name', 'Unnamed')}**")
+        st.markdown(parse_markdown(entry.get("message", "")))
+
+        if "MOON_FULL_MOON" in entry.get("tags", []):
+            st.markdown("🌕 Saved under a **Full Moon** ✨")
+
+        if entry.get("image_path"):
+            st.image(entry["image_path"], use_column_width=True)
+
+        # Tag Links
+        if entry.get("tags"):
+            tag_links = " ".join([
+                f"<a href='?tag={tag}' style='background:#fef3c7; color:#92400e; padding:2px 6px; border-radius:5px; margin-right:5px; text-decoration:none;'>{tag}</a>"
+                for tag in entry["tags"]
+            ])
+            st.markdown(f"🏷️ Tags: {tag_links}", unsafe_allow_html=True)
+
+        st.caption(f"⏳ {entry.get('timestamp', 'No timestamp')}")
+        scroll_image = generate_scroll_image(entry)
+        with st.expander("📥 Download Scroll"):
+            st.download_button(
+                "📜 Download as PNG",
+                data=scroll_image,
+                file_name=f"{entry.get('name', 'scroll').replace(' ', '_')}_scroll.png",
+                mime="image/png"
+            )
+
+        st.markdown("---")
+else:
+    st.info("No scrolls found for the current filters.")
+
+# === Final Filter Pass ===
+filtered_entries = []
+for entry in entries:
+    zodiac = get_entry_zodiac(entry)
+    _, moon_phase_label = moon_phase_simple()
+    timestamp = entry.get("timestamp", "")
+
+    date_match = True
+    if only_today:
+        try:
+            entry_date = datetime.datetime.strptime(timestamp[:10], "%Y-%m-%d").date()
+            date_match = entry_date == today
+        except:
+            date_match = False
+
+    zodiac_match = (not selected_zodiacs) or (zodiac in selected_zodiacs)
+    moon_match = (not selected_moons) or (moon_phase_label in selected_moons)
+
+    if zodiac_match and moon_match and date_match:
+        filtered_entries.append(entry
+
+# === Sidebar: Glyph, Zodiac, Moon, Date ===
+today = datetime.date.today()
+with st.sidebar:
+    st.markdown("## 🌟 Active Glyph")
+    selected_glyph = st.selectbox("Pick your active glyph:", zodiac_options)
+
+    st.markdown("## ♈︎ Zodiac Filter")
+    selected_zodiacs = st.multiselect("Filter by Zodiac", zodiac_options)
+
+    st.markdown("## 🌕 Moon Phase Filter")
+    selected_moons = st.multiselect("Filter by Moon Phase", moon_options)
+
+    st.markdown("## 🗓️ Date Filter")
+    only_today = st.checkbox("📅 Show only today's scrolls")
+# === Full-Text Search ===
+search_query = st.text_input("🔎 Search Scrolls").strip().lower()
+if search_query:
+    entries = [
+        entry for entry in entries
+        if search_query in entry["name"].lower()
+        or search_query in entry["message"].lower()
+        or any(search_query in tag.lower() for tag in entry.get("tags", []))
+    ]
+
+# === Clear Tag Option ===
+if selected_tag:
+    if st.button("🔄 Clear Tag Filter"):
+        st.query_params.clear()
+        st.rerun()
+
+# === Apply Manual Filter ===
+if filter_option == "Category":
+    entries = filter_by_category(entries, filter_value)
+elif filter_option == "Name":
+    entries = filter_by_name(entries, filter_value)
+elif filter_option == "Keyword":
+    entries = filter_by_keyword(entries, filter_value)
+elif filter_option == "Tag":
+    entries = filter_by_tag(entries, filter_value)
+
+# === Apply Quick Filter from Tag Param ===
+if selected_tag:
+    st.info(f"📌 Showing scrolls tagged with: `{selected_tag}`")
+    entries = filter_by_tag(entries, selected_tag)
+
+# === 🔍 Filter Panel ===
+st.subheader("🔍 Filter Scrolls")
+filter_option = st.selectbox("Filter by", ["All", "Category", "Name", "Keyword", "Tag"])
+filter_value = st.text_input("Filter value:")
+
+# === 📥 Load + Filter Scrolls ===
+entries = load_messages()
+query_params = st.query_params
+selected_tag = query_params.get("tag", [None])[0]
+
+# === 🌒 Helper: Get Zodiac from Tags ===
+def get_entry_zodiac(entry):
+    return next((tag.replace("ZODIAC_", "") for tag in entry.get("tags", []) if tag.startswith("ZODIAC_")), None)
 
 # === 🌠 ZodiacGlowSystem – Optional Visual Layer ===
 @st.cache_data

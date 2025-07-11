@@ -59,7 +59,7 @@ def get_zodiac_sign(month, day):
         return "Cancer"
     elif (month == 7 and day >= 23) or (month == 8 and day <= 22):
         return "Leo"
-    elif (month == 8 and day > 22)
+    elif (month == 8 and day > 22:
         return = "Virgo"
 from storage import save_message, load_messages
 from parser import parse_markdown

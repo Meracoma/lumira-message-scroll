@@ -1,4 +1,4 @@
-# === 📜 LUMIRA MESSAGE SCROLL APP – MASTER BUILD v1.0 ===
+# === 📜 LUMIRA MESSAGE SCROLL APP – MASTER BUILD v1.1 ===
 
 import streamlit as st
 import streamlit.components.v1 as components
@@ -7,6 +7,7 @@ from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 import pytz
 import os
+from math import floor
 
 # === 🧠 Local Storage Helpers ===
 from storage import save_message, load_messages
@@ -19,11 +20,9 @@ from filters import (
 )
 
 # === 🌌 Echo Functions (external echo system integrations) ===
-from echo import (
-    tag_echo,  # Optional echo tagging utility
-)
+from echo import tag_echo  # Optional echo tagging utility
 
-# === 🔖 Setup Favorites + Log Lists (session state managed) ===
+# === 🔖 Setup Session State for Favorites + Echo Log ===
 if "favorites" not in st.session_state:
     st.session_state.favorites = []
 
@@ -32,6 +31,7 @@ if "echo_log" not in st.session_state:
 
 # === ⏰ Timezone Support ===
 TZ = pytz.timezone("America/Detroit")
+now = datetime.now(TZ)
 
 # === ⚙️ Streamlit Page Config ===
 st.set_page_config(
@@ -45,7 +45,7 @@ st.set_page_config(
 now = datetime.datetime.now()
 today = now.date()
 
-# === 🌟 Zodiac Sign Lookup ===
+# === ♓ Zodiac Sign Helper ===
 def get_zodiac_sign(month, day):
     if (month == 3 and day >= 21) or (month == 4 and day <= 19):
         return "Aries"         # ♈
@@ -74,7 +74,8 @@ def get_zodiac_sign(month, day):
     else:
         return None  # fallback for invalid dates
 
-# === ♓ Zodiac Sign Helper ===
+
+# === 🌟 Zodiac Sign Lookup ===
 def get_zodiac_sign(month, day):
     if (month == 3 and day >= 21) or (month == 4 and day <= 19):
         return "Aries"         # ♈

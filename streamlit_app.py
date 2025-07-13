@@ -33,10 +33,11 @@ if "echo_log" not in st.session_state:
 # === ⏰ Timezone Support ===
 TZ = pytz.timezone("America/Detroit")
 
-# === ⚙️ App Layout Configuration ===
+# === ⚙️ Streamlit Page Config ===
 st.set_page_config(
     page_title="📜 Lumira Message Scroll",
-    layout="centered"
+    layout="centered",
+    initial_sidebar_state="expanded"
 )
 
 # === 🔭 Zodiac + Moon Filter System ===
@@ -102,7 +103,7 @@ def get_zodiac_sign(month, day):
     else:
         return None  # fallback for invalid dates
 
-# === ✨ Zodiac Glyph Mapping ===
+# === ♈ Zodiac Glyph Map ===
 ZODIAC_GLYPHS = {
     "Aries": "♈", "Taurus": "♉", "Gemini": "♊", "Cancer": "♋",
     "Leo": "♌", "Virgo": "♍", "Libra": "♎", "Scorpio": "♏",

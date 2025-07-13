@@ -99,11 +99,12 @@ st.set_page_config(page_title="📜 Lumira Message Scroll", layout="centered")
 
 # === 🌕 Moonfire Utilities ===
 from math import floor
+from datetime import datetime
 
 def moon_phase_simple():
-    """Returns moon phase emoji + label"""
+    """Returns moon phase emoji + label based on current UTC time"""
     now = datetime.utcnow()
-    diff = now - datetime(2001, 1, 1)  # known new moon ref
+    diff = now - datetime(2001, 1, 1)  # known reference new moon
     days = diff.days + (diff.seconds / 86400)
     lunations = days / 29.53058867
     pos = lunations % 1
@@ -126,6 +127,7 @@ def moon_phase_simple():
         return "🌘", "Waning Crescent"
 
 def get_zodiac_sign(month, day):
+    """Return sun zodiac sign based on Gregorian date"""
     if (month == 3 and day >= 21) or (month == 4 and day <= 19):
         return "Aries"
     elif (month == 4 and day >= 20) or (month == 5 and day <= 20):
@@ -150,6 +152,7 @@ def get_zodiac_sign(month, day):
         return "Aquarius"
     elif (month == 2 and day >= 19) or (month == 3 and day <= 20):
         return "Pisces"
+
 
 def render_constellation_card(entry, moon_label, sign="Cancer"):
     glyph = ZODIAC_GLYPHS.get(sign, "♋")

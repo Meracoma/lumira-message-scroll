@@ -40,12 +40,40 @@ st.set_page_config(
 )
 
 # === 🔭 Zodiac + Moon Filter System ===
-
 # Get current date
 now = datetime.datetime.now()
 today = now.date()
 
 # === 🌟 Zodiac Sign Lookup ===
+def get_zodiac_sign(month, day):
+    if (month == 3 and day >= 21) or (month == 4 and day <= 19):
+        return "Aries"         # ♈
+    elif (month == 4 and day >= 20) or (month == 5 and day <= 20):
+        return "Taurus"        # ♉
+    elif (month == 5 and day >= 21) or (month == 6 and day <= 20):
+        return "Gemini"        # ♊
+    elif (month == 6 and day >= 21) or (month == 7 and day <= 22):
+        return "Cancer"        # ♋
+    elif (month == 7 and day >= 23) or (month == 8 and day <= 22):
+        return "Leo"           # ♌
+    elif (month == 8 and day >= 23) or (month == 9 and day <= 22):
+        return "Virgo"         # ♍
+    elif (month == 9 and day >= 23) or (month == 10 and day <= 22):
+        return "Libra"         # ♎
+    elif (month == 10 and day >= 23) or (month == 11 and day <= 21):
+        return "Scorpio"       # ♏
+    elif (month == 11 and day >= 22) or (month == 12 and day <= 21):
+        return "Sagittarius"   # ♐
+    elif (month == 12 and day >= 22) or (month == 1 and day <= 19):
+        return "Capricorn"     # ♑
+    elif (month == 1 and day >= 20) or (month == 2 and day <= 18):
+        return "Aquarius"      # ♒
+    elif (month == 2 and day >= 19) or (month == 3 and day <= 20):
+        return "Pisces"        # ♓
+    else:
+        return None  # fallback for invalid dates
+
+# === ♓ Zodiac Sign Helper ===
 def get_zodiac_sign(month, day):
     if (month == 3 and day >= 21) or (month == 4 and day <= 19):
         return "Aries"         # ♈
@@ -85,6 +113,7 @@ ZODIAC_GLYPHS = {
 from math import floor
 from datetime import datetime
 
+# === 🌗 Moonfire Moon Phase ===
 def moon_phase_simple():
     """Returns moon phase emoji + label based on current UTC time"""
     now = datetime.utcnow()
@@ -109,7 +138,8 @@ def moon_phase_simple():
         return "🌗", "Last Quarter"
     else:
         return "🌘", "Waning Crescent"
-
+        
+# === Moonfire Sun Phase ===
 def get_zodiac_sign(month, day):
     """Return sun zodiac sign based on Gregorian date"""
     if (month == 3 and day >= 21) or (month == 4 and day <= 19):
@@ -137,7 +167,7 @@ def get_zodiac_sign(month, day):
     elif (month == 2 and day >= 19) or (month == 3 and day <= 20):
         return "Pisces"
 
-
+# === Constellation Card Rendering ===
 def render_constellation_card(entry, moon_label, sign="Cancer"):
     glyph = ZODIAC_GLYPHS.get(sign, "♋")
     glow_color = MOON_GLOW_MAP.get(moon_label, "#c084fc")
@@ -323,8 +353,6 @@ def scroll_card(entry):
         </div>
     </div>
     """
-
-
 
 # === Image Generation ===
 def generate_scroll_image(entry):
@@ -739,6 +767,7 @@ with st.sidebar:
 
     st.markdown("## 🗓️ Date Filter")
     only_today = st.checkbox("📅 Show only today's scrolls")
+    
 # === Full-Text Search ===
 search_query = st.text_input("🔎 Search Scrolls").strip().lower()
 if search_query:

@@ -1,20 +1,37 @@
-# === LUMIRA MESSAGE SCROLL APP – MASTER BUILD v1.0 ===
+# === 📜 LUMIRA MESSAGE SCROLL APP – MASTER BUILD v1.0 ===
+
 import streamlit as st
 import streamlit.components.v1 as components
 from datetime import datetime
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
-import os
 import pytz
+import os
+
+# === 🧠 Local Storage Helpers ===
 from storage import save_message, load_messages
 from parser import parse_markdown
-from filters import filter_by_category, filter_by_name, filter_by_keyword, filter_by_tag
-import datetime
-
-# === External Modular Functions ===
-from echo import (
-    tag_echo,  # === Constants Lookups ===
+from filters import (
+    filter_by_category, 
+    filter_by_name, 
+    filter_by_keyword, 
+    filter_by_tag
 )
+
+# === 🌌 Echo Functions (external echo system integrations) ===
+from echo import (
+    tag_echo,  # Optional echo tagging utility
+)
+
+# === 🔖 Setup Favorites + Log Lists (session state managed) ===
+if "favorites" not in st.session_state:
+    st.session_state.favorites = []
+
+if "echo_log" not in st.session_state:
+    st.session_state.echo_log = []
+
+# === ⏰ Timezone Support ===
+TZ = pytz.timezone("America/Detroit")
 
 # === ⚙️ App Layout Configuration ===
 st.set_page_config(

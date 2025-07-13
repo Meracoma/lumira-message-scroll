@@ -11,54 +11,24 @@ from parser import parse_markdown
 from filters import filter_by_category, filter_by_name, filter_by_keyword, filter_by_tag
 import datetime
 
+# === External Modular Functions ===
+from echo import (
+    tag_echo,  # === Constants Lookups ===
+)
+
+# === ⚙️ App Layout Configuration ===
+st.set_page_config(
+    page_title="📜 Lumira Message Scroll",
+    layout="centered"
+)
+
 # === 🔭 Zodiac + Moon Filter System ===
 
 # Get current date
 now = datetime.datetime.now()
 today = now.date()
 
-# === External Modular Functions ===
-from echo import (
-    tag_echo,  # === Constants Lookups ===
-)
-
-ZODIAC_GLYPHS = {
-    "Aries": "♈", "Taurus": "♉", "Gemini": "♊", "Cancer": "♋",
-    "Leo": "♌", "Virgo": "♍", "Libra": "♎", "Scorpio": "♏",
-    "Sagittarius": "♐", "Capricorn": "♑", "Aquarius": "♒", "Pisces": "♓"
-}
-
-# === App Config ===
-st.set_page_config(page_title="📜 Lumira Message Scroll", layout="centered")
-
-# === 🌕 Moonfire Utilities ===
-from math import floor
-
-def moon_phase_simple():
-    """Returns moon phase emoji + label"""
-    now = datetime.utcnow()
-    diff = now - datetime(2001, 1, 1)  # known new moon ref
-    days = diff.days + (diff.seconds / 86400)
-    lunations = days / 29.53058867
-    pos = lunations % 1
-
-    if pos < 0.03 or pos > 0.97:
-        return "🌑", "New Moon"
-    elif pos < 0.22:
-        return "🌒", "Waxing Crescent"
-    elif pos < 0.28:
-        return "🌓", "First Quarter"
-    elif pos < 0.47:
-        return "🌔", "Waxing Gibbous"
-    elif pos < 0.53:
-        return "🌕", "Full Moon"
-    elif pos < 0.72:
-        return "🌖", "Waning Gibbous"
-    elif pos < 0.78:
-        return "🌗", "Last Quarter"
-    else:
-        return "🌘", "Waning Crescent"
-
+# === 🌟 Zodiac Sign Lookup ===
 def get_zodiac_sign(month, day):
     if (month == 3 and day >= 21) or (month == 4 and day <= 19):
         return "Aries"         # ♈
@@ -87,15 +57,12 @@ def get_zodiac_sign(month, day):
     else:
         return None  # fallback for invalid dates
 
-# === Constants Lookups ===
+# === ✨ Zodiac Glyph Mapping ===
 ZODIAC_GLYPHS = {
     "Aries": "♈", "Taurus": "♉", "Gemini": "♊", "Cancer": "♋",
     "Leo": "♌", "Virgo": "♍", "Libra": "♎", "Scorpio": "♏",
     "Sagittarius": "♐", "Capricorn": "♑", "Aquarius": "♒", "Pisces": "♓"
 }
-
-# === App Config ===
-st.set_page_config(page_title="📜 Lumira Message Scroll", layout="centered")
 
 # === 🌕 Moonfire Utilities ===
 from math import floor

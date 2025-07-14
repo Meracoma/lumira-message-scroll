@@ -187,3 +187,80 @@ def toggle_favorite(entry_timestamp: str):
 
 def log_to_echo(entry):
     st.session_state.echo_log.append(entry)
+
+# === 🌌 SCROLL CARD RENDER FUNCTION ===
+
+def render_scroll_card(entry, moon_label, zodiac_sign):
+    glyph = ZODIAC_GLYPHS.get(zodiac_sign, "♋")
+    glow_color = MOON_GLOW_MAP.get(moon_label, "#c084fc")  # Default: violet
+    name_display = entry['name']
+    timestamp = entry.get("timestamp", "⏳ Unknown Time")
+    tags = entry.get("tags", [])
+
+    # Check if marked as favorite
+    is_fav = entry.get("favorite", False) or (timestamp in st.session_state.favorites)
+    if is_fav:
+        name_display = f"⭐ {name_display}"
+
+    # Render tags as interactive pill links
+    tag_html = ""
+    if tags:
+        tag_html = "🏷️ "
+        for tag in tags:
+            tag_html += f"""
+                <a href='?tag={tag}' onclick="window.location.reload()" style='
+                    background:#fef3c7;
+                    color:#92400e;
+                    padding:2px 6px;
+                    border-radius:6px;
+                    margin-right:6px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    font-size: 0.75rem;'>{tag}</a>
+            """
+
+    html = f"""
+    <style>
+    @keyframes shimmer {{
+        0% {{ background-position: 0% 50%; }}
+        100% {{ background-position: 100% 50%; }}
+    }}
+    .constellation-bg {{
+        background: linear-gradient(270deg, rgba(255,255,255,0.05), rgba(0,0,0,0.15));
+        background-size: 400% 400%;
+        animation: shimmer 20s ease infinite;
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1.2rem;
+        border: 2px solid {glow_color};
+        box-shadow: 0 0 20px {glow_color}55;
+    }}
+    </style>
+
+    <div class="constellation-bg">
+        <h3 style="color: #fff;">{glyph} {name_display}</h3>
+        <p style="color: #ddd;">{entry['message']}</p>
+        <p style="font-size: 0.8rem; color: #aaa;">{timestamp}</p>
+        <div style="margin-top: 0.5rem;">{tag_html}</div>
+    </div>
+    """
+
+    st.components.v1.html(html, height=260)
+
+    # Echo + Favorite Control Row
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        if st.button("📣 Send to Echo Log", key=f"echo_{timestamp}"):
+            log_to_echo(entry)
+            tag_echo(entry["name"], entry["message"], "SCROLL_PING")
+            st.success("📡 Scroll echoed to memory log!")
+
+    with col2:
+        current_fav_state = timestamp in st.session_state.favorites
+        if st.checkbox("⭐ Mark as Favorite", value=current_fav_state, key=f"fav_{timestamp}"):
+            if not current_fav_state:
+                st.session_state.favorites.append(timestamp)
+        else:
+            if current_fav_state:
+                st.session_state.favorites.remove(timestamp)
+

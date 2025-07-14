@@ -1,7 +1,7 @@
 # === 🧠 ECHO MEMORY LOGGER SYSTEM (echo_log.py) ===
 
 import json
-from datetime import datetime
+from configure import MOON_GLOW_MAP, ZODIAC_SIGNS, TIMEZONE, PROJECT_NAME
 import streamlit as st
 
 ECHO_LOG_PATH = "echo_memory.json"

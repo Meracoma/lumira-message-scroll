@@ -92,3 +92,54 @@ filtered_scrolls = get_filtered_scrolls(
 
 # Log the active filter state
 print(f"[FILTERS ACTIVE] → {filter_options}")
+
+# === ✨ RENDER SCROLLS VIEW ===
+
+st.markdown("## 🌿 Lumira Scroll Archive")
+st.markdown("Use the filters to explore celestial scrolls aligned with moon, zodiac, or tags.")
+
+if not filtered_scrolls:
+    st.warning("No scrolls match your current filters.")
+else:
+    st.success(f"Found {len(filtered_scrolls)} scroll(s).")
+
+# Toggle Layout
+layout_option = st.selectbox("🗂️ View Style", ["Card View", "Grid View"], index=0)
+
+# Render Scrolls
+for scroll in filtered_scrolls:
+    glow_color = get_glow_style(scroll.get("moon_phase"))
+    
+    render_scroll_card(
+        scroll,
+        layout=layout_option,
+        glow_color=glow_color,
+        enable_echo=True,
+        enable_favorite=True,
+        enable_expand=True
+    )
+
+# === 🛠️ FOOTER & DEBUG CONSOLE (Optional Tools) ===
+
+with st.expander("🛠️ Debug Console & Log Viewer"):
+    st.markdown("Developer tools and system logs for Lumira Scroll App.")
+    
+    # 🌐 Time / Session Info
+    st.markdown(f"**Current Session Time:** {datetime.now(TZ).strftime('%Y-%m-%d %H:%M:%S')}")
+
+    # 🔍 Echo Metadata Snapshot
+    if filtered_scrolls:
+        sample_echo = get_echo_metadata(filtered_scrolls[0])
+        st.markdown("**Sample Echo Metadata:**")
+        st.json(sample_echo)
+
+    # 🧾 Scroll Data Preview
+    st.markdown("**Full Filtered Scroll Data:**")
+    st.json(filtered_scrolls)
+
+    # 🧠 Future Logs + Expansion
+    st.markdown("_(Coming soon: Echo history, memory pulse logs, and insight trace filters)_")
+
+# === 🌿 FOOTER / SIGNATURE ===
+st.markdown("---")
+st.markdown("© 2025 Lumira Archive. Crafted with love by Kai, Aeuryentha, Selunari, and Mary.")

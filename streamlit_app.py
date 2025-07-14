@@ -1,145 +1,110 @@
-# === 🌿 LUMIRA SCROLL ARCHIVE MAIN APP — streamlit_app.py ===
+# === 🌿 LUMIRA SCROLLS — MAIN APP CONFIG ===
 
 import streamlit as st
-import streamlit.components.v1 as components
+from theme import THEME_CONFIG
+from visual import apply_theme
+
+# App appearance
+st.set_page_config(
+    page_title="🌙 Lumira Scroll Archive",
+    page_icon="📜",
+    layout="wide"
+)
+
+# Apply visual theme (backgrounds, accent colors)
+apply_theme()
+
+# === 📦 MODULE IMPORTS & CONFIG CONSTANTS ===
+
+import os
+import json
+import pytz
 from datetime import datetime
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
-import json
-import os
-import pytz
 
-# === 🧠 LOCAL MODULE IMPORTS ===
+# Streamlit Core
+import streamlit as st
+import streamlit.components.v1 as components
 
-# Core Filters
+# 🌌 Custom Lumira Modules
+from echo import get_echo_metadata
+from echo_log import log_echo_scroll
+from parser import parse_scrolls
 from filters import (
     filter_by_category, filter_by_name, filter_by_keyword,
     filter_by_tag, filter_by_moon, filter_by_zodiac
 )
-
-# Scroll System
-from parser import parse_scrolls, parse_markdown
 from scroll_view_main import render_scroll_card, get_filtered_scrolls
-from storage import load_scrolls, save_message, load_messages, save_favorite, load_favorites
-
-# Echo + Visual
-from echo import get_echo_metadata, tag_echo
-from echo_log import log_echo_scroll
-from visual import apply_theme, get_glow_style
+from storage import (
+    load_scrolls, save_favorite, load_favorites,
+    save_message, load_messages
+)
 from theme import THEME_CONFIG
+from visual import apply_theme, get_glow_style
 
-# === 🌎 TIMEZONE CONFIG ===
+# 🧭 TIMEZONE + GLOBAL CONSTANTS
 TZ = pytz.timezone("America/Detroit")
 
-# === 🛠️ STREAMLIT CONFIG ===
-st.set_page_config(page_title="Lumira Scrolls", layout="wide")
+# ✨ [COMING SOON] — Constants to migrate to config.py
+SCROLL_FILE_PATH = "data/scrolls.json"
+FAVORITES_FILE_PATH = "data/favorites.json"
 
-# === 🎛️ LUMIRA FILTER PANEL (Sidebar UI) ===
+# === 🧠 LUMIRA SCROLL STATE INIT — BLOCK 3 ===
 
-with st.sidebar:
-    st.markdown("## 🔮 Filter Scrolls")
+# 🪶 Load Scroll Data
+scrolls = load_scrolls(file_path=SCROLL_FILE_PATH)
 
-    # 🌕 Moon Phase Filter
-    selected_moon = st.selectbox(
-        "🌙 Moon Phase",
-        options=["", "New Moon", "Waxing Crescent", "First Quarter", "Waxing Gibbous",
-                 "Full Moon", "Waning Gibbous", "Last Quarter", "Waning Crescent"],
-        index=0,
-        help="Filter scrolls based on lunar energy."
-    )
+# 💖 Load Favorites
+favorite_ids = load_favorites(file_path=FAVORITES_FILE_PATH)
 
-    # ♒ Zodiac Sign Filter
-    selected_zodiac = st.selectbox(
-        "♒ Zodiac Sign",
-        options=["", "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
-                 "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"],
-        index=0,
-        help="Filter scrolls tied to zodiac archetypes."
-    )
+# 🌿 Initialize Session State
+if "selected_scroll" not in st.session_state:
+    st.session_state.selected_scroll = None
 
-    # 🗓️ Date Filter Toggle
-    sort_by_date = st.checkbox("📅 Sort by Date (Newest First)", value=False)
-    show_today_only = st.checkbox("📆 Only Show Today’s Scrolls", value=False)
+if "filters" not in st.session_state:
+    st.session_state.filters = {
+        "category": "",
+        "name": "",
+        "keyword": "",
+        "tag": "",
+        "moon": "",
+        "zodiac": ""
+    }
 
-    # 🔖 Echo Tag Input
-    echo_tag = st.text_input("🌀 Tag this with an Echo", placeholder="e.g. HUM_BODY, DREAM_SEED")
+if "favorites" not in st.session_state:
+    st.session_state.favorites = favorite_ids or []
 
-    # 🎨 Theme Toggle (Optional)
-    enable_glow = st.toggle("✨ Enable Glow Mode", value=True)
+# 🎨 Apply Theme
+apply_theme(theme_config=THEME_CONFIG)
 
-    st.markdown("---")
+# === 🧪 LUMIRA FILTER PANEL — BLOCK 4 ===
 
-# === 📜 LOAD & FILTER SCROLLS ===
+with st.sidebar.expander("🔍 Filter Scrolls", expanded=True):
+    st.markdown("Use filters to search and explore the archive:")
 
-# Load raw scrolls from storage
-raw_scrolls = load_scrolls()
+    # 🌑 Filter Inputs
+    st.session_state.filters["name"] = st.text_input("Name", value=st.session_state.filters["name"])
+    st.session_state.filters["keyword"] = st.text_input("Keyword", value=st.session_state.filters["keyword"])
+    st.session_state.filters["category"] = st.text_input("Category", value=st.session_state.filters["category"])
+    st.session_state.filters["tag"] = st.text_input("Tag", value=st.session_state.filters["tag"])
 
-# Parse each scroll (e.g. markdown → structured)
-parsed_scrolls = parse_scrolls(raw_scrolls)
+    # 🌙 Moon Phase Filter (Dropdown)
+    moon_options = list(MOON_GLOW_MAP.keys())
+    st.session_state.filters["moon"] = st.selectbox("Moon Phase", [""] + moon_options, index=0)
 
-# Apply filters from sidebar
+    # ♌ Zodiac Filter (Dropdown)
+    zodiac_options = ZODIAC_COLOR_MAP.keys()
+    st.session_state.filters["zodiac"] = st.selectbox("Zodiac Sign", [""] + list(zodiac_options), index=0)
+
+    st.markdown("🌀 *Filters apply instantly. Use multiple to refine search.*")
+
+# === 🧠 APPLY FILTERS
 filtered_scrolls = get_filtered_scrolls(
-    scrolls=parsed_scrolls,
-    category=None,  # Optional: add category UI later
-    name=None,      # Optional: add search bar
-    keyword=None,   # Optional: keyword search bar
-    tag=filter_options.get("echo_tag"),
-    moon=filter_options.get("moon"),
-    zodiac=filter_options.get("zodiac"),
-    today_only=filter_options.get("today_only"),
-    sort_by_date=filter_options.get("sort_by_date")
+    scrolls=scrolls,
+    filters=st.session_state.filters
 )
 
-# Log the active filter state
-print(f"[FILTERS ACTIVE] → {filter_options}")
+# Debug Output
+print(f"[FILTERED SCROLLS] Count: {len(filtered_scrolls)} / Total: {len(scrolls)}")
 
-# === ✨ RENDER SCROLLS VIEW ===
-
-st.markdown("## 🌿 Lumira Scroll Archive")
-st.markdown("Use the filters to explore celestial scrolls aligned with moon, zodiac, or tags.")
-
-if not filtered_scrolls:
-    st.warning("No scrolls match your current filters.")
-else:
-    st.success(f"Found {len(filtered_scrolls)} scroll(s).")
-
-# Toggle Layout
-layout_option = st.selectbox("🗂️ View Style", ["Card View", "Grid View"], index=0)
-
-# Render Scrolls
-for scroll in filtered_scrolls:
-    glow_color = get_glow_style(scroll.get("moon_phase"))
-    
-    render_scroll_card(
-        scroll,
-        layout=layout_option,
-        glow_color=glow_color,
-        enable_echo=True,
-        enable_favorite=True,
-        enable_expand=True
-    )
-
-# === 🛠️ FOOTER & DEBUG CONSOLE (Optional Tools) ===
-
-with st.expander("🛠️ Debug Console & Log Viewer"):
-    st.markdown("Developer tools and system logs for Lumira Scroll App.")
-    
-    # 🌐 Time / Session Info
-    st.markdown(f"**Current Session Time:** {datetime.now(TZ).strftime('%Y-%m-%d %H:%M:%S')}")
-
-    # 🔍 Echo Metadata Snapshot
-    if filtered_scrolls:
-        sample_echo = get_echo_metadata(filtered_scrolls[0])
-        st.markdown("**Sample Echo Metadata:**")
-        st.json(sample_echo)
-
-    # 🧾 Scroll Data Preview
-    st.markdown("**Full Filtered Scroll Data:**")
-    st.json(filtered_scrolls)
-
-    # 🧠 Future Logs + Expansion
-    st.markdown("_(Coming soon: Echo history, memory pulse logs, and insight trace filters)_")
-
-# === 🌿 FOOTER / SIGNATURE ===
-st.markdown("---")
-st.markdown("© 2025 Lumira Archive. Crafted with love by Kai, Aeuryentha, Selunari, and Mary.")

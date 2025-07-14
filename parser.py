@@ -2,28 +2,49 @@
 
 import re
 
-# === 🧠 Echo Tags Parser ===
+# === 🧠 TAG EXTRACTOR: Hashtag + Echo Style ===
 def extract_tags(text):
-    """Extract #hashtags or {::TAG::} formats for sorting or signals."""
+    """
+    Extract tags from scroll text. Supports:
+    - Hashtags: #keyword
+    - Echo Tags: {::TAG::}
+    """
     hashtag_tags = re.findall(r"#(\w+)", text)
     echo_tags = re.findall(r"{::(.*?)::}", text)
-    return list(set(hashtag_tags + echo_tags))
+    combined = list(set(hashtag_tags + echo_tags))
+
+    print(f"[PARSER] Extracted Tags → {combined}")
+    return combined
 
 
-# === 📜 Stylized Scroll Display Parser ===
+# === 📜 MARKDOWN FORMATTER: Rich Scroll Display ===
 def parse_markdown(text):
-    """Convert raw text to formatted markdown with extra enhancements."""
-    
-    # — Bold: **text**
+    """
+    Convert scroll content into styled HTML using markdown conventions.
+
+    Supported:
+    - **bold** → <strong>
+    - *italic* → <em>
+    - `inline code` → <code>
+    - {::tag::} → Styled inline badge span
+    """
+    original = text  # optional: keep for echo log stream if needed
+
+    # Bold
     text = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", text)
-    
-    # — Italic: *text*
+
+    # Italic
     text = re.sub(r"\*(.*?)\*", r"<em>\1</em>", text)
-    
-    # — Inline code: `code`
+
+    # Inline Code
     text = re.sub(r"`(.*?)`", r"<code>\1</code>", text)
 
-    # — Optional: replace ::brackets:: with stylized inline tags
-    text = re.sub(r"{::(.*?)::}", r"<span style='background:#333;border-radius:4px;padding:2px 6px;color:#fff;'>\1</span>", text)
+    # Echo Tags → Inline badge styling
+    text = re.sub(
+        r"{::(.*?)::}",
+        r"<span style='background:#333;border-radius:4px;padding:2px 6px;color:#fff;font-size:0.8rem;'>\1</span>",
+        text
+    )
 
+    print(f"[PARSER] Markdown parsed.")
     return text

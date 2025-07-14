@@ -1,7 +1,7 @@
 # === scroll_view_main.py – Lumira Scroll View Core ===
 
 import streamlit as st
-from datetime import datetime
+from configure import MOON_GLOW_MAP, ZODIAC_SIGNS, TIMEZONE, PROJECT_NAME
 from filters import (
     filter_by_keyword,
     filter_by_category,

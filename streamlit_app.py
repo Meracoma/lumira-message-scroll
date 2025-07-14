@@ -264,3 +264,57 @@ def render_scroll_card(entry, moon_label, zodiac_sign):
             if current_fav_state:
                 st.session_state.favorites.remove(timestamp)
 
+# === 🔎 FILTER HANDLERS — FINAL + PHASE 3 READY ===
+
+def apply_filters(messages, name=None, keyword=None, category=None, tag=None):
+    """
+    Apply all selected filters to the message list.
+    Each filter is optional and layered sequentially.
+    Enhanced with case-insensitive matching, tag rerun, and echo logging.
+    """
+    filtered = messages
+
+    # Normalize inputs to lowercase for case-insensitive matching
+    if name:
+        name = name.lower()
+    if keyword:
+        keyword = keyword.lower()
+    if category:
+        category = category.lower()
+    if tag:
+        tag = tag.lower()
+
+    # 🌿 Echo log message
+    filter_debug_msg = f"[🌀 FILTER APPLIED] → Name: {name}, Keyword: {keyword}, Category: {category}, Tag: {tag}"
+    print(filter_debug_msg)
+
+    # 🌊 Echo memory stream (Phase 3 forward-compatible)
+    if "echo_log" in st.session_state:
+        st.session_state.echo_log.append({
+            "type": "filter",
+            "timestamp": datetime.now().isoformat(),
+            "details": {
+                "name": name,
+                "keyword": keyword,
+                "category": category,
+                "tag": tag
+            },
+            "note": filter_debug_msg
+        })
+
+    # Apply filters
+    if name:
+        filtered = [m for m in filtered if name in m.get('name', '').lower()]
+
+    if keyword:
+        filtered = [m for m in filtered if keyword in m.get('message', '').lower()]
+
+    if category:
+        filtered = [m for m in filtered if category in m.get('category', '').lower()]
+
+    if tag:
+        filtered = [m for m in filtered if tag in [t.lower() for t in m.get('tags', [])]]
+        # Enhance UX: rerun with tag param
+        st.experimental_set_query_params(tag=tag)
+
+    return filtered

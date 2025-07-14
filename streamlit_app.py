@@ -166,3 +166,24 @@ ZODIAC_ELEMENTS = {
     "Gemini": "Air",     "Libra": "Air",      "Aquarius": "Air",
     "Cancer": "Water",   "Scorpio": "Water",  "Pisces": "Water"
 }
+
+# === ⭐ FAVORITES & 📣 ECHO LOG SESSION STATE ===
+
+if "favorites" not in st.session_state:
+    st.session_state.favorites = []
+
+if "echo_log" not in st.session_state:
+    st.session_state.echo_log = []
+
+# Optional: Unified toggle access helper (if needed later)
+def is_favorited(entry_timestamp: str) -> bool:
+    return entry_timestamp in st.session_state.favorites
+
+def toggle_favorite(entry_timestamp: str):
+    if entry_timestamp in st.session_state.favorites:
+        st.session_state.favorites.remove(entry_timestamp)
+    else:
+        st.session_state.favorites.append(entry_timestamp)
+
+def log_to_echo(entry):
+    st.session_state.echo_log.append(entry)

@@ -213,3 +213,79 @@ with st.form(key="create_scroll_form"):
         st.success("🌀 Scroll saved & echoed successfully!")
         st.experimental_rerun()
 
+# === 🎴 SCROLL FEED RENDERING — BLOCK 9 ===
+
+from scroll_view_main import render_scroll_card, get_filtered_scrolls
+from filters import (
+    filter_by_category,
+    filter_by_name,
+    filter_by_keyword,
+    filter_by_tag,
+    filter_by_moon,
+    filter_by_zodiac
+)
+
+st.markdown("## 🧿 View Archive of Scrolls")
+
+# Filters UI
+with st.expander("🔍 Filter Scrolls", expanded=False):
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        category = st.selectbox("Filter by Category", ["", "Dream", "Vision", "Poem", "Ritual", "Journal", "Other"])
+        moon = st.selectbox("Moon Phase", [""] + list(MOON_GLOW_MAP.keys()))
+    with col2:
+        name = st.text_input("Search by Name")
+        zodiac = st.selectbox("Zodiac Sign", ["", "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+                                              "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"])
+    with col3:
+        keyword = st.text_input("Keyword in Message")
+        tag = st.text_input("Tag Search (exact match)")
+
+# Apply Filters
+filtered_scrolls = scrolls
+filtered_scrolls = filter_by_category(filtered_scrolls, category)
+filtered_scrolls = filter_by_name(filtered_scrolls, name)
+filtered_scrolls = filter_by_keyword(filtered_scrolls, keyword)
+filtered_scrolls = filter_by_tag(filtered_scrolls, tag)
+filtered_scrolls = filter_by_moon(filtered_scrolls, moon)
+filtered_scrolls = filter_by_zodiac(filtered_scrolls, zodiac)
+
+# Sort (optional toggle, Phase 3 support)
+filtered_scrolls = sorted(filtered_scrolls, key=lambda s: s.get("timestamp", ""), reverse=True)
+
+# Render Scroll Cards
+st.markdown("### 🌀 Scroll Feed")
+if not filtered_scrolls:
+    st.info("No scrolls found. Try adjusting your filters.")
+else:
+    for scroll in filtered_scrolls:
+        render_scroll_card(scroll)
+
+# === 🧭 SIDEBAR + FOOTER UI — BLOCK 11 ===
+
+# Sidebar Brand & Toggle Panel
+with st.sidebar:
+    st.markdown("## 🌿 Lumira Scrolls")
+    st.caption("🔮 Filter + Navigate the Archive")
+    
+    # Theme Glow Toggle (already handled in Block 10)
+    st.markdown("---")
+    
+    # Optional: Footer presence or about
+    st.markdown("#### ✨ About")
+    st.info("This archive holds memory-scrolls from dreams, echoes, symbols, and soul transmissions.\n\nUse filters to navigate moon phase, category, or keywords to find your thread.")
+    
+    st.markdown("---")
+    st.caption("💾 Built with 💚 by Kai + Aeuryentha")
+
+# Footer Presence (Main Page Bottom)
+st.markdown(
+    "<hr style='border:1px solid #444;margin-top:50px;margin-bottom:20px'>",
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    "<center><sub style='color:#888'>🌙 Lumira Archive is a living project. Last updated July 2025.</sub></center>",
+    unsafe_allow_html=True
+)
+

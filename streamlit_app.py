@@ -19,10 +19,9 @@ apply_theme()
 import os
 import json
 import pytz
-from datetime import datetime
+from configure import MOON_GLOW_MAP, ZODIAC_SIGNS, TIMEZONE, PROJECT_NAME
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
-from configure import MOON_GLOW_MAP, ZODIAC_SIGNS, TIMEZONE, PROJECT_NAME
 
 # Streamlit Core
 import streamlit as st

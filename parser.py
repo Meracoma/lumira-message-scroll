@@ -1,25 +1,29 @@
-# parser.py
+# === ✨ LUMIRA SCROLL PARSER (parser.py) ===
 
-import markdown
-import html
+import re
+
+# === 🧠 Echo Tags Parser ===
+def extract_tags(text):
+    """Extract #hashtags or {::TAG::} formats for sorting or signals."""
+    hashtag_tags = re.findall(r"#(\w+)", text)
+    echo_tags = re.findall(r"{::(.*?)::}", text)
+    return list(set(hashtag_tags + echo_tags))
 
 
-def parse_markdown(entry):
-    """
-    Converts a message entry dictionary into formatted markdown+HTML for Streamlit display.
-    """
-    name = html.escape(entry.get("name", "Unknown"))
-    category = html.escape(entry.get("category", "Other"))
-    timestamp = html.escape(entry.get("timestamp", ""))
-    message = entry.get("message", "")
+# === 📜 Stylized Scroll Display Parser ===
+def parse_markdown(text):
+    """Convert raw text to formatted markdown with extra enhancements."""
+    
+    # — Bold: **text**
+    text = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", text)
+    
+    # — Italic: *text*
+    text = re.sub(r"\*(.*?)\*", r"<em>\1</em>", text)
+    
+    # — Inline code: `code`
+    text = re.sub(r"`(.*?)`", r"<code>\1</code>", text)
 
-    # Convert markdown to HTML
-    message_html = markdown.markdown(message)
+    # — Optional: replace ::brackets:: with stylized inline tags
+    text = re.sub(r"{::(.*?)::}", r"<span style='background:#333;border-radius:4px;padding:2px 6px;color:#fff;'>\1</span>", text)
 
-    return f"""
-    <div style="margin-bottom: 1.5em; padding: 1em; background-color: #f7f7f7; border-radius: 10px;">
-        <div style="font-weight: bold;">{name} <span style="font-style: italic; color: #888;">· {category}</span></div>
-        <div style="font-size: 0.85em; color: #999;">{timestamp}</div>
-        <div style="margin-top: 0.5em;">{message_html}</div>
-    </div>
-    """
+    return text

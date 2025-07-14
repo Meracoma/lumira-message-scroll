@@ -4,6 +4,7 @@
 __version__ = "1.0.0"
 
 # Optional: shared constants or imports
+from configure import MOON_GLOW_MAP, ZODIAC_SIGNS, TIMEZONE, PROJECT_NAME
 from .theme import THEME_PALETTE
 from .storage import save_message, load_messages
 from .filters import (

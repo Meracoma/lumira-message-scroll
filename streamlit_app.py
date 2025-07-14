@@ -47,6 +47,19 @@ if "active_tag" not in st.session_state:
 from math import floor
 from datetime import datetime as dt
 
+# === 🌈 MOON GLOW AESTHETIC MAPPING ===
+
+MOON_GLOW_MAP = {
+    "New Moon":         "#111827",  # Deep black/blue (mystery, seed)
+    "Waxing Crescent":  "#6d28d9",  # Indigo / purple (potential, memory forming)
+    "First Quarter":    "#4f46e5",  # Royal blue (courage, rise)
+    "Waxing Gibbous":   "#7c3aed",  # Violet (anticipation, gestation)
+    "Full Moon":        "#facc15",  # Radiant gold (revelation, climax)
+    "Waning Gibbous":   "#f59e0b",  # Amber (reflection, gratitude)
+    "Last Quarter":     "#e11d48",  # Rose red (release, letting go)
+    "Waning Crescent":  "#6b7280",  # Ash grey (compost, return to source)
+}
+
 # 🌘 Moon Phase Detection (Simple)
 def moon_phase_simple():
     """
@@ -108,3 +121,48 @@ def get_zodiac_sign(month, day):
         return "Pisces"
     else:
         return None  # Fallback for invalid dates
+
+# === ♓ ZODIAC SIGN & GLYPH LOOKUP ===
+
+# ♈ Zodiac Sign Determination (based on Gregorian date)
+def get_zodiac_sign(month: int, day: int) -> str:
+    if (month == 3 and day >= 21) or (month == 4 and day <= 19):
+        return "Aries"
+    elif (month == 4 and day >= 20) or (month == 5 and day <= 20):
+        return "Taurus"
+    elif (month == 5 and day >= 21) or (month == 6 and day <= 20):
+        return "Gemini"
+    elif (month == 6 and day >= 21) or (month == 7 and day <= 22):
+        return "Cancer"
+    elif (month == 7 and day >= 23) or (month == 8 and day <= 22):
+        return "Leo"
+    elif (month == 8 and day >= 23) or (month == 9 and day <= 22):
+        return "Virgo"
+    elif (month == 9 and day >= 23) or (month == 10 and day <= 22):
+        return "Libra"
+    elif (month == 10 and day >= 23) or (month == 11 and day <= 21):
+        return "Scorpio"
+    elif (month == 11 and day >= 22) or (month == 12 and day <= 21):
+        return "Sagittarius"
+    elif (month == 12 and day >= 22) or (month == 1 and day <= 19):
+        return "Capricorn"
+    elif (month == 1 and day >= 20) or (month == 2 and day <= 18):
+        return "Aquarius"
+    elif (month == 2 and day >= 19) or (month == 3 and day <= 20):
+        return "Pisces"
+    return "Unknown"
+
+# ♑ Zodiac Glyphs for each sign
+ZODIAC_GLYPHS = {
+    "Aries": "♈",      "Taurus": "♉",     "Gemini": "♊",     "Cancer": "♋",
+    "Leo": "♌",        "Virgo": "♍",      "Libra": "♎",      "Scorpio": "♏",
+    "Sagittarius": "♐","Capricorn": "♑", "Aquarius": "♒",   "Pisces": "♓"
+}
+
+# 🜁 Optional: Element Mapping for elemental integration (future add-ons)
+ZODIAC_ELEMENTS = {
+    "Aries": "Fire",     "Leo": "Fire",       "Sagittarius": "Fire",
+    "Taurus": "Earth",   "Virgo": "Earth",    "Capricorn": "Earth",
+    "Gemini": "Air",     "Libra": "Air",      "Aquarius": "Air",
+    "Cancer": "Water",   "Scorpio": "Water",  "Pisces": "Water"
+}

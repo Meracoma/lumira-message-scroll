@@ -1,6 +1,6 @@
 # === 🧠 LUMIRA FILTER SYSTEM (filters.py) ===
 
-from datetime import datetime
+from configure import MOON_GLOW_MAP, ZODIAC_SIGNS, TIMEZONE, PROJECT_NAME
 
 def filter_by_category(scrolls, category):
     """Filter scrolls by category (case-insensitive)."""

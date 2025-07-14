@@ -108,3 +108,108 @@ filtered_scrolls = get_filtered_scrolls(
 # Debug Output
 print(f"[FILTERED SCROLLS] Count: {len(filtered_scrolls)} / Total: {len(scrolls)}")
 
+# === 🎴 SCROLL RENDER AREA — BLOCK 5 ===
+
+st.markdown("## ✨ Scroll Archive")
+st.markdown("Below are the scrolls that match your filters. Scroll through and explore:")
+
+if filtered_scrolls:
+    for scroll in filtered_scrolls:
+        render_scroll_card(scroll)
+else:
+    st.info("No scrolls match your filters. Try adjusting them above.")
+
+# === 💾 FAVORITE / ECHO SAVE AREA — BLOCK 6 ===
+
+st.markdown("### 💖 Save Scroll to Favorites")
+
+if selected_scroll := st.selectbox(
+    "Choose a scroll to save (based on Name)", 
+    options=[s["name"] for s in filtered_scrolls] if filtered_scrolls else []
+):
+    if st.button("Save to Favorites"):
+        saved = save_favorite(selected_scroll, scrolls)
+        if saved:
+            st.success(f"✨ Saved '{selected_scroll}' to favorites.")
+            log_echo_scroll(saved, action="save")  # Log to echo memory
+        else:
+            st.warning("Already saved or not found.")
+
+# === ⭐ FAVORITES DISPLAY — BLOCK 7 ===
+
+st.markdown("## ⭐ Your Favorite Scrolls")
+
+favorite_scrolls = load_favorites()
+
+if favorite_scrolls:
+    view_mode = st.radio("View Style", ["🪶 Card", "🌌 Grid"], horizontal=True)
+    
+    for scroll in favorite_scrolls:
+        glow_style = get_glow_style(scroll.get("moon_phase", "Full Moon"))
+        
+        if view_mode == "🪶 Card":
+            st.markdown(f"""
+                <div style="background-color:{glow_style}; padding:1rem; border-radius:1rem; margin-bottom:1rem;">
+                    <h4>{scroll.get("name", "Untitled")}</h4>
+                    <p><strong>Category:</strong> {scroll.get("category", "General")}</p>
+                    <p><strong>Tags:</strong> {', '.join(scroll.get("tags", []))}</p>
+                    <p>{scroll.get("message", "[No content]")}</p>
+                </div>
+            """, unsafe_allow_html=True)
+        else:
+            cols = st.columns(2)
+            for idx, scroll in enumerate(favorite_scrolls):
+                with cols[idx % 2]:
+                    st.markdown(f"""
+                        <div style="background-color:{glow_style}; padding:1rem; border-radius:1rem; margin-bottom:1rem;">
+                            <h4>{scroll.get("name", "Untitled")}</h4>
+                            <p>{scroll.get("message", "[No content]")}</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+else:
+    st.info("No favorites yet. Save a scroll to see it here.")
+
+# === 🔐 STORAGE & ECHO SYNC — BLOCK 8 ===
+
+from storage import save_message, load_messages
+from echo_log import log_echo_scroll
+
+# Load current scroll archive
+scrolls = load_messages()
+
+# Display upload section
+st.markdown("## ✨ Create New Scroll")
+
+with st.form(key="create_scroll_form"):
+    name = st.text_input("Scroll Title")
+    category = st.selectbox("Category", ["Dream", "Vision", "Poem", "Ritual", "Journal", "Other"])
+    tags_input = st.text_input("Tags (comma separated)")
+    message = st.text_area("Scroll Content", height=150)
+    moon_phase = st.selectbox("Moon Phase", list(MOON_GLOW_MAP.keys()))
+    zodiac = st.selectbox("Zodiac Sign", [
+        "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+        "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+    ])
+    
+    submit = st.form_submit_button(label="Save Scroll")
+
+    if submit and message.strip():
+        tags = [t.strip() for t in tags_input.split(",") if t.strip()]
+        timestamp = datetime.now(TZ).isoformat()
+
+        new_scroll = {
+            "name": name.strip() or "Untitled",
+            "category": category,
+            "tags": tags,
+            "message": message.strip(),
+            "moon_phase": moon_phase,
+            "zodiac": zodiac,
+            "timestamp": timestamp
+        }
+
+        save_message(new_scroll)
+        log_echo_scroll(new_scroll)
+
+        st.success("🌀 Scroll saved & echoed successfully!")
+        st.experimental_rerun()
+

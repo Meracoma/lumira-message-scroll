@@ -318,3 +318,109 @@ def apply_filters(messages, name=None, keyword=None, category=None, tag=None):
         st.experimental_set_query_params(tag=tag)
 
     return filtered
+
+# === 📜 SCROLL VIEW MAIN – FULL FILTER + RENDER SYSTEM ===
+
+def render_scroll(messages):
+    st.title("📜 Lumira Scroll Archive")
+
+    # === 🎨 Theme Toggle
+    st.sidebar.markdown("### 🎨 Theme Selector")
+    theme = st.sidebar.radio("Choose Theme", ["Dark", "Light", "Starlight"], index=0)
+
+    # Theme colors
+    if theme == "Dark":
+        bg_color = "#0f172a"
+        text_color = "#e2e8f0"
+    elif theme == "Light":
+        bg_color = "#f8fafc"
+        text_color = "#1e293b"
+    else:
+        bg_color = "#1e1b4b"
+        text_color = "#fcd34d"
+
+    st.markdown(f"""
+    <style>
+    .reportview-container {{
+        background-color: {bg_color};
+        color: {text_color};
+    }}
+    h1, h2, h3, h4, h5, h6 {{
+        color: {text_color};
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+
+    # === Sidebar: Filters + Sort
+    st.sidebar.header("🔍 Refine Your Scroll")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        name_filter = st.text_input("🔤 Name")
+        category_filter = st.text_input("📁 Category")
+    with col2:
+        keyword_filter = st.text_input("💬 Keyword")
+        tag_filter = st.text_input("🏷️ Tag")
+
+    zodiac_filter = st.sidebar.selectbox("🌞 Filter by Sun Sign", ["All"] + list(ZODIAC_GLYPHS.keys()))
+    moon_filter = st.sidebar.selectbox("🌙 Filter by Moon Phase", ["All"] + list(MOON_GLOW_MAP.keys()))
+
+    sort_by = st.sidebar.selectbox("🔃 Sort Scrolls", ["Newest", "Oldest", "Name A-Z", "Favorites First"])
+
+    layout_view = st.sidebar.radio("🧱 Layout", ["📋 Full Width", "🔳 Grid View"])
+
+    if st.sidebar.button("🔄 Clear Filters"):
+        name_filter = category_filter = keyword_filter = tag_filter = ""
+        zodiac_filter = moon_filter = "All"
+        sort_by = "Newest"
+        layout_view = "📋 Full Width"
+        st.experimental_set_query_params()
+
+    # === 🌙 Moon + Zodiac Info
+    moon_emoji, moon_label = moon_phase_simple()
+    today = datetime.now()
+    zodiac_sign = get_zodiac_sign(today.month, today.day)
+
+    st.markdown(f"""
+    <div style="margin-top:1rem; margin-bottom:1.5rem; text-align:center;">
+        <h4>🌓 Current Moon: {moon_label} {moon_emoji}</h4>
+        <h5>☀️ Sun Sign: {zodiac_sign} {ZODIAC_GLYPHS[zodiac_sign]}</h5>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # === 🌿 Apply Filter Logic
+    filtered = apply_filters(messages, name=name_filter, keyword=keyword_filter,
+                             category=category_filter, tag=tag_filter)
+
+    # 🌙 Filter by Zodiac / Moon if selected
+    if zodiac_filter != "All":
+        filtered = [msg for msg in filtered if msg.get("zodiac") == zodiac_filter]
+    if moon_filter != "All":
+        filtered = [msg for msg in filtered if msg.get("moon_phase") == moon_filter]
+
+    # 🔃 Sort Logic
+    if sort_by == "Newest":
+        filtered = sorted(filtered, key=lambda x: x.get("timestamp", ""), reverse=True)
+    elif sort_by == "Oldest":
+        filtered = sorted(filtered, key=lambda x: x.get("timestamp", ""))
+    elif sort_by == "Name A-Z":
+        filtered = sorted(filtered, key=lambda x: x.get("name", "").lower())
+    elif sort_by == "Favorites First":
+        filtered = sorted(filtered, key=lambda x: not x.get("favorite", False))
+
+    print(f"[Scroll Echo Log] {len(filtered)} scrolls displayed | Filters → Name: {name_filter}, Tag: {tag_filter}, Sun: {zodiac_filter}, Moon: {moon_filter}, Sort: {sort_by}")
+
+    if not filtered:
+        st.info("🌀 No scrolls match your filters. Try adjusting.")
+        return
+
+    # === 🌌 Render Cards
+    if layout_view == "📋 Full Width":
+        for msg in filtered:
+            render_constellation_card(msg, moon_label, sign=zodiac_sign)
+    else:
+        cols = st.columns(2)
+        for i, msg in enumerate(filtered):
+            with cols[i % 2]:
+                render_constellation_card(msg, moon_label, sign=zodiac_sign)
+

@@ -1,29 +1,25 @@
-# === 📜 LUMIRA SCROLL APP – CORE SETUP ===
+# === 🌿 LUMIRA SCROLL ARCHIVE MAIN APP — streamlit_app.py ===
 
-# 🧩 External Libraries
 import streamlit as st
-import streamlit.components.v1 as components
+import json
 from datetime import datetime
-from io import BytesIO
-from PIL import Image, ImageDraw, ImageFont
-import os
 import pytz
 
-# 🧠 Local Modules (modular helpers)
-from storage import save_message, load_messages
-from parser import parse_markdown
+# Core Modules
 from filters import (
-    filter_by_category,
-    filter_by_name,
-    filter_by_keyword,
-    filter_by_tag
+    filter_by_category, filter_by_name, filter_by_keyword,
+    filter_by_tag, filter_by_moon, filter_by_zodiac
 )
+from echo import get_echo_metadata
+from echo_log import log_echo_scroll
+from parser import parse_scrolls
+from scroll_view_main import render_scroll_card, get_filtered_scrolls
+from storage import load_scrolls, save_favorite, load_favorites
+from theme import THEME_CONFIG
+from visual import apply_theme, get_glow_style
 
-# 🌌 Echo System Integration
-from echo import tag_echo  # Optional echo tagging system
-
-# 🌍 Timezone Setting
-TZ = pytz.timezone("America/Detroit")
+# Optional Toggles
+st.set_page_config(page_title="Lumira Scrolls", layout="wide")
 
 # 🪄 Streamlit App Layout Config
 st.set_page_config(

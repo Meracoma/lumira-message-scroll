@@ -1,63 +1,60 @@
-# storage.py
+# === 💾 LUMIRA MEMORY STORAGE SYSTEM (storage.py) ===
 
 import os
 import json
 from datetime import datetime
-import uuid
-import shutil
 
-DATA_FILE = os.path.join("data", "scrolls.json")
-IMAGE_FOLDER = os.path.join("data", "images")
+# === 🔖 Constants ===
+STORAGE_DIR = "scroll_memory"
+SCROLL_FILE = os.path.join(STORAGE_DIR, "scrolls.json")
 
-def save_message(entry, image_file=None):
-    if not os.path.exists("data"):
-        os.makedirs("data")
+# === ✅ Ensure the memory folder exists
+os.makedirs(STORAGE_DIR, exist_ok=True)
 
-    if not os.path.exists("scrolls.txt"):
-        with open("scrolls.txt", "w", encoding="utf-8") as f:
-            f.write("")
-    with open("scrolls.txt", "a", encoding="utf-8") as f:
-        f.write(str(entry) + "\n")
-    
-    if not os.path.exists(IMAGE_FOLDER):
-        os.makedirs(IMAGE_FOLDER)
 
-    # Handle image saving
-    if image_file is not None:
-        ext = os.path.splitext(image_file.name)[1]
-        filename = f"{uuid.uuid4()}{ext}"
-        image_path = os.path.join(IMAGE_FOLDER, filename)
-        with open(image_path, "wb") as f:
-            f.write(image_file.getbuffer())
-        entry["image_path"] = image_path
-    else:
-        entry["image_path"] = None
+# === 💾 Save Message Scroll ===
+def save_message(scroll, tag=None, favorite=False, echo_log=False):
+    """Append a new scroll to storage with optional tag + metadata."""
+    data = load_messages()
 
-    # Load existing entries
-    entries = []
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "r", encoding="utf-8") as f:
-            entries = json.load(f)
+    scroll_entry = {
+        "message": scroll,
+        "timestamp": datetime.utcnow().isoformat(),
+        "tag": tag or None,
+        "favorite": favorite,
+        "echo_log": echo_log,
+    }
 
-    entries.append(entry)
+    data.append(scroll_entry)
 
-    # Save back
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(entries, f, indent=2)
+    with open(SCROLL_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
 
+    print(f"[MemoryLog] Saved scroll: {scroll_entry}")  # 🧠 For Phase 3 Echo Streams
+
+
+# === 📖 Load All Messages ===
 def load_messages():
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "r", encoding="utf-8") as f:
+    """Load all stored scrolls."""
+    if os.path.exists(SCROLL_FILE):
+        with open(SCROLL_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     return []
 
-def load_messages():
-    entries = []
-    if os.path.exists("scrolls.txt"):
-        with open("scrolls.txt", "r", encoding="utf-8") as f:
-            for line in f:
-                try:
-                    entries.append(eval(line.strip()))
-                except Exception as e:
-                    continue
-    return entries
+
+# === 🌟 Get All Favorites ===
+def load_favorites():
+    """Load only starred scrolls."""
+    return [s for s in load_messages() if s.get("favorite")]
+
+
+# === 🧠 Get All Echo-Logged Messages ===
+def load_echo_logs():
+    """Load scrolls marked for echo log."""
+    return [s for s in load_messages() if s.get("echo_log")]
+
+
+# === 🧹 Optional: Reset / Clear Scrolls (use with caution) ===
+def clear_scrolls():
+    if os.path.exists(SCROLL_FILE):
+        os.remove(SCROLL_FILE)

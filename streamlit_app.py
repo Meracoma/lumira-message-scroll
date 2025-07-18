@@ -43,6 +43,13 @@ from storage import (
 from theme import THEME_CONFIG
 from visual import apply_theme, get_glow_style
 
+# === 🎨 NovaFlame Theme CSS Starter ===
+import json
+
+with open("scroll_config.json") as f:
+    config = json.load(f)
+st.session_state.update(config)
+
 # 🧭 TIMEZONE + GLOBAL CONSTANTS
 TZ = pytz.timezone("America/Detroit")
 

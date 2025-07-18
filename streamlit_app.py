@@ -282,6 +282,10 @@ else:
 # === 🧭 SIDEBAR + FOOTER UI — BLOCK 11 ===
 
 # Sidebar Brand & Toggle Panel
+with st.sidebar.expander("🧾 View Mode", expanded=True):
+    toggle = st.radio("Select layout", ["List", "Grid"], index=0 if view_mode == "list" else 1)
+    st.session_state["view_mode"] = "list" if toggle == "List" else "grid"
+    
 with st.sidebar:
     st.markdown("## 🌿 Lumira Scrolls")
     st.caption("🔮 Filter + Navigate the Archive")

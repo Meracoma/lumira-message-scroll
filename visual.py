@@ -54,3 +54,27 @@ def apply_theme(theme_name):
     }}
     </style>
     """, unsafe_allow_html=True)
+    
+# visual.py — Phase 3 Scroll Renderer with Dual Layout Support
+import streamlit as st
+from streamlit_extras.row import row
+
+def render_scroll_card(scroll, view_mode="list"):
+    placeholder_title = "Untitled Scroll"
+    placeholder_text = "No content available."
+    
+    title = scroll.get("title", placeholder_title)
+    text = scroll.get("text", placeholder_text)
+    tags = scroll.get("tags", [])
+
+    if view_mode == "grid":
+        with st.container():
+            st.markdown(f"### {title}")
+            st.markdown(text)
+            st.caption("🌿 Tags: " + ", ".join(tags) if tags else "—")
+    else:
+        with st.container():
+            st.markdown(f"**{title}**")
+            st.markdown(text)
+            if tags:
+                st.markdown("**Tags:** " + ", ".join(tags))

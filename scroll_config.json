@@ -1,0 +1,10 @@
+{
+  "user_role": "dreamer",
+  "theme": "nova_flame",
+  "view_mode": "list",
+  "glow_intensity": 0.8,
+  "moon_sync": true,
+  "zodiac_filter": false,
+  "show_tags": true,
+  "remember_last_scroll": true
+}

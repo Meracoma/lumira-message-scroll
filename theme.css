@@ -1,0 +1,31 @@
+
+/* theme.css — NovaFlame Starter */
+
+body {
+  background-color: #0a0a0a;
+  color: #fbeffb;
+  font-family: 'Georgia', serif;
+}
+
+h1, h2, h3, h4 {
+  color: #ff9dfc;
+  text-shadow: 0 0 8px #ff9dfc88;
+}
+
+.scroll-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #ffccff33;
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  box-shadow: 0 0 15px #ff66cc55;
+}
+
+.tag {
+  background: #6a1b9a;
+  border-radius: 8px;
+  padding: 0.2rem 0.6rem;
+  margin: 0.1rem;
+  display: inline-block;
+  color: #fff;
+}

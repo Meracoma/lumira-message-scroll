@@ -215,6 +215,24 @@ with st.form(key="create_scroll_form"):
 
 # === 🎴 SCROLL FEED RENDERING — BLOCK 9 ===
 
+# Block 9 — Scroll Feed Rendering with Toggle View
+from visual import render_scroll_card
+
+view_mode = st.session_state.get("view_mode", "list")
+
+st.subheader("🌀 Scroll Feed")
+if not scroll_data:
+    st.info("No scrolls available.")
+else:
+    if view_mode == "grid":
+        cols = st.columns(2)
+        for i, scroll in enumerate(scroll_data):
+            with cols[i % 2]:
+                render_scroll_card(scroll, view_mode="grid")
+    else:
+        for scroll in scroll_data:
+            render_scroll_card(scroll, view_mode="list")
+
 from scroll_view_main import render_scroll_card, get_filtered_scrolls
 from filters import (
     filter_by_category,

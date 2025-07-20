@@ -50,6 +50,40 @@ with open("scroll_config.json") as f:
     config = json.load(f)
 st.session_state.update(config)
 
+# === 🌌 Optional Stardust Overlay ===
+constellation_css_block = """
+<style>
+body::after {
+  content: "";
+  background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+  opacity: 0.15;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: -1;
+}
+</style>
+"""
+
+# === 🌌 Optional Stardust Overlay ===
+constellation_css_block = """
+<style>
+body::after {
+  content: "";
+  background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+  opacity: 0.15;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: -1;
+}
+</style>
+"""
+
+if config.get("show_constellation"):
+    st.markdown(constellation_css_block, unsafe_allow_html=True)
+
+if config.get("show_constellation"):
+    st.markdown(constellation_css_block, unsafe_allow_html=True)
+
 # 🧭 TIMEZONE + GLOBAL CONSTANTS
 TZ = pytz.timezone("America/Detroit")
 

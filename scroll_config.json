@@ -6,5 +6,10 @@
   "moon_sync": true,
   "zodiac_filter": false,
   "show_tags": true,
-  "remember_last_scroll": true
+  "remember_last_scroll": true,
+
+  "aura_scan": true,
+  "emotion_state": "neutral",  // auto-set or user-defined (e.g. grief, curious, clear)
+  "role_glow": true,
+  "theme_sync": true
 }

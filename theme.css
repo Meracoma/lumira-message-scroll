@@ -29,3 +29,25 @@ h1, h2, h3, h4 {
   display: inline-block;
   color: #fff;
 }
+
+/* Avatar role glow effects */
+.scroll-card.dreamer {
+  box-shadow: 0 0 18px #ff66ccaa;
+}
+.scroll-card.seer {
+  box-shadow: 0 0 18px #66ccffcc;
+}
+.scroll-card.guardian {
+  box-shadow: 0 0 18px #ffcc66cc;
+}
+
+/* Aura color overlays */
+body.emotion-grief {
+  background-color: #1a1a2e;
+}
+body.emotion-curious {
+  background-color: #2e2a1a;
+}
+body.emotion-clear {
+  background-color: #e6faff;
+}

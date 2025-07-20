@@ -1,17 +1,33 @@
-
-/* theme.css — NovaFlame Starter */
+/* === NovaFlame — Full Scroll Style + Overlay & Glow === */
 
 body {
   background-color: #0a0a0a;
   color: #fbeffb;
   font-family: 'Georgia', serif;
+  background-image: url('https://upload.wikimedia.org/wikipedia/commons/6/65/Starsinthesky.jpg');
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: cover;
+  background-attachment: fixed;
 }
 
+/* 🌌 Constellation Overlay Grid */
+body::after {
+  content: "";
+  background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+  opacity: 0.15;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: -1;
+}
+
+/* === Headings === */
 h1, h2, h3, h4 {
   color: #ff9dfc;
   text-shadow: 0 0 8px #ff9dfc88;
 }
 
+/* === Base Scroll Card === */
 .scroll-card {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid #ffccff33;
@@ -19,8 +35,16 @@ h1, h2, h3, h4 {
   padding: 1rem;
   margin: 0.5rem 0;
   box-shadow: 0 0 15px #ff66cc55;
+  transition: all 0.3s ease-in-out;
 }
 
+/* === Glow Pulse on Hover === */
+.scroll-card:hover {
+  box-shadow: 0 0 25px #ffd6ff99;
+  transform: scale(1.02);
+}
+
+/* === Tags === */
 .tag {
   background: #6a1b9a;
   border-radius: 8px;
@@ -30,44 +54,37 @@ h1, h2, h3, h4 {
   color: #fff;
 }
 
-/* Avatar role glow effects */
-.scroll-card.dreamer {
-  box-shadow: 0 0 18px #ff66ccaa;
+/* === Avatar Role Glow === */
+.scroll-card.dreamer { box-shadow: 0 0 18px #ff66ccaa; }
+.scroll-card.seer    { box-shadow: 0 0 18px #66ccffaa; }
+.scroll-card.guardian{ box-shadow: 0 0 18px #ffcc66aa; }
+.scroll-card.weaver  { box-shadow: 0 0 18px #99ffccaa; }
+
+/* === Emotional Overlay === */
+.scroll-card.emotion-grief    { background-color: #1e1b2a; }
+.scroll-card.emotion-curious  { background-color: #2a2e1e; }
+.scroll-card.emotion-clear    { background-color: #eefaff; }
+.scroll-card.emotion-neutral  { background-color: rgba(255, 255, 255, 0.03); }
+
+/* === Moon Phase Body Effects (Optional Future Sync) === */
+body.moon-full .scroll-card {
+  border-color: #fff2ff55;
+  box-shadow: 0 0 20px #ffd6ff55;
 }
-.scroll-card.seer {
-  box-shadow: 0 0 18px #66ccffcc;
-}
-.scroll-card.guardian {
-  box-shadow: 0 0 18px #ffcc66cc;
+body.moon-new .scroll-card {
+  opacity: 0.85;
+  border-style: dashed;
 }
 
-/* Aura color overlays */
-body.emotion-grief {
-  background-color: #1a1a2e;
+/* === Optional Animated Scroll Glow (Class: glow-box) === */
+@keyframes glow {
+  0%   { box-shadow: 0 0 4px #ff66cc33; }
+  50%  { box-shadow: 0 0 20px #ff66ccaa; }
+  100% { box-shadow: 0 0 4px #ff66cc33; }
 }
-body.emotion-curious {
-  background-color: #2e2a1a;
-}
-body.emotion-clear {
-  background-color: #e6faff;
-}
-
-.scroll-card.dreamer {
-  box-shadow: 0 0 18px #ff66ccaa;
-}
-.scroll-card.seer {
-  box-shadow: 0 0 18px #66ccffaa;
-}
-.scroll-card.guardian {
-  box-shadow: 0 0 18px #ffcc66aa;
-}
-
-.scroll-card.emotion-grief {
-  background-color: #1e1b2a;
-}
-.scroll-card.emotion-curious {
-  background-color: #2a2e1e;
-}
-.scroll-card.emotion-clear {
-  background-color: #eefaff;
+.glow-box {
+  animation: glow 3s infinite;
+  border: 2px solid #ff66cc55;
+  padding: 1rem;
+  border-radius: 12px;
 }

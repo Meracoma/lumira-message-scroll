@@ -286,6 +286,74 @@ else:
     for scroll in filtered_scrolls:
         render_scroll_card(scroll)
 
+# === 🌕 THEME + AVATAR GLOW SYNC — BLOCK 10 ===
+
+import ephem
+import datetime
+
+st.markdown("## 🌕 Theme + Avatar Sync")
+
+# Load scroll config
+user_config = st.session_state.get("scroll_config", {
+    "user_role": "dreamer",
+    "moon_sync": True,
+    "emotion_state": "neutral"
+})
+
+# 🎑 Get Moon Phase & Map
+def get_moon_phase():
+    moon = ephem.Moon()
+    moon.compute(datetime.datetime.utcnow())
+    return moon.phase  # 0–100
+
+def map_phase_to_theme(phase):
+    if phase < 15:
+        return "new"
+    elif phase < 45:
+        return "waxing"
+    elif phase < 60:
+        return "full"
+    elif phase < 85:
+        return "waning"
+    return "dark"
+
+# 🎭 Get Role, Emotion, Phase → CSS Class Bundler
+def get_body_classes(config):
+    classes = []
+    if config.get("moon_sync"):
+        phase = get_moon_phase()
+        classes.append(f"moon-{map_phase_to_theme(phase)}")
+    if config.get("emotion_state"):
+        classes.append(f"emotion-{config['emotion_state']}")
+    if config.get("user_role"):
+        classes.append(config["user_role"])
+    return ' '.join(classes)
+
+# ⬇️ Apply to Body via Custom HTML
+body_classes = get_body_classes(user_config)
+st.markdown(f"<body class='{body_classes}'>", unsafe_allow_html=True)
+
+# 🌟 Role Selector UI (Optional)
+roles = ["dreamer", "seer", "weaver", "guardian"]
+selected = st.selectbox("Choose your path:", roles, index=roles.index(user_config.get("user_role", "dreamer")))
+user_config["user_role"] = selected
+st.session_state["scroll_config"] = user_config
+
+# 🔮 Aura Scan Function (Tone Detection for Scrolls)
+def scan_scroll_tone(scroll_text):
+    keywords = {
+        "grief": ["loss", "hurt", "sorrow", "gone", "grief", "miss"],
+        "curious": ["wonder", "explore", "why", "how", "if"],
+        "clear": ["truth", "clarity", "peace", "calm", "settled"]
+    }
+    for mood, words in keywords.items():
+        if any(word in scroll_text.lower() for word in words):
+            return mood
+    return "neutral"
+
+# (Optional: Auto-update tone from sample scrolls or summary tone analysis)
+# You could call scan_scroll_tone here and update user_config["emotion_state"] dynamically
+
 # === 🧭 SIDEBAR + FOOTER UI — BLOCK 11 ===
 
 # Sidebar Brand & Toggle Panel

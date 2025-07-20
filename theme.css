@@ -51,3 +51,23 @@ body.emotion-curious {
 body.emotion-clear {
   background-color: #e6faff;
 }
+
+.scroll-card.dreamer {
+  box-shadow: 0 0 18px #ff66ccaa;
+}
+.scroll-card.seer {
+  box-shadow: 0 0 18px #66ccffaa;
+}
+.scroll-card.guardian {
+  box-shadow: 0 0 18px #ffcc66aa;
+}
+
+.scroll-card.emotion-grief {
+  background-color: #1e1b2a;
+}
+.scroll-card.emotion-curious {
+  background-color: #2a2e1e;
+}
+.scroll-card.emotion-clear {
+  background-color: #eefaff;
+}

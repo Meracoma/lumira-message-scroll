@@ -60,12 +60,24 @@ import streamlit as st
 from streamlit_extras.row import row
 
 def render_scroll_card(scroll, view_mode="list"):
+    import streamlit as st
+
+    # Defaults
     placeholder_title = "Untitled Scroll"
     placeholder_text = "No content available."
-    
+
+    # Fetch values
     title = scroll.get("title", placeholder_title)
     text = scroll.get("text", placeholder_text)
     tags = scroll.get("tags", [])
+
+    # Role + emotion sync from session config (Block 10)
+    config = st.session_state.get("scroll_config", {})
+    role_class = config.get("user_role", "dreamer")
+    emotion_class = f"emotion-{config.get('emotion_state', 'neutral')}"
+
+    # Begin scroll card container with custom classes
+    st.markdown(f"<div class='scroll-card {role_class} {emotion_class}'>", unsafe_allow_html=True)
 
     if view_mode == "grid":
         with st.container():
@@ -78,3 +90,6 @@ def render_scroll_card(scroll, view_mode="list"):
             st.markdown(text)
             if tags:
                 st.markdown("**Tags:** " + ", ".join(tags))
+
+    st.markdown("</div>", unsafe_allow_html=True)
+    
